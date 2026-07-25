@@ -1,7 +1,7 @@
-| Order | Module         | Priority  |
+| Order | Module         | Priority  |status
 | ----- | -------------- | --------- |
-| ✅     | Product        | Done      |
-| 2     | Category       | High      |
+| ✅     | Product        | Done      |done
+| 2     | Category       | High      |done
 | 3     | Supplier       | High      |
 | 4     | Authentication | High      |
 | 5     | Inventory      | High      |
