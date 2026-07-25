@@ -4,6 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const productRoutes = require('./routes/productRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
@@ -23,6 +24,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/products', productRoutes);
+app.use('/api/categories', categoryRoutes);
 
 if (require.main === module) {
   app.listen(PORT, () => {
