@@ -15,21 +15,48 @@ const productSchema = new mongoose.Schema(
       trim: true,
       uppercase: true
     },
+barcode: {
+  type: String,
+  unique: true,
+  sparse: true,
+  trim: true
+},
+
     category: {
-      type: String,
-      required: [true, 'Category is required'],
-      trim: true
-    },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    required: [true, 'Category is required']
+},
+
+unit: {
+  type: String,
+  enum: [
+    'Piece',
+    'Bottle',
+    'Packet',
+    'Can',
+    'Box',
+    'Carton',
+    'Kg',
+    'Gram',
+    'Litre',
+    'Millilitre',
+    'Dozen'
+  ],
+  default: 'Piece'
+},
+
+supplier: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Supplier'
+},
+
     description: {
       type: String,
       trim: true,
       default: ''
     },
-    price: {
-      type: Number,
-      required: [true, 'Price is required'],
-      min: [0, 'Price cannot be negative']
-    },
+    
     buyingPrice: {
       type: Number,
       required: [true, 'Buying price is required'],
@@ -52,43 +79,14 @@ const productSchema = new mongoose.Schema(
       min: [0, 'Discount cannot be negative'],
       max: [100, 'Discount cannot exceed 100']
     },
-    stock: {
-      type: Number,
-      required: [true, 'Stock is required'],
-      min: [0, 'Stock cannot be negative'],
-      default: 0
-    },
-    stockQuantity: {
-      type: Number,
-      required: [true, 'Stock quantity is required'],
-      min: [0, 'Stock quantity cannot be negative'],
-      default: 0
-    },
+    
+    
     reorderLevel: {
       type: Number,
       default: 10,
       min: [0, 'Reorder level cannot be negative']
     },
-    manufacturingDate: {
-      type: Date,
-      validate: {
-        validator: function (value) {
-          if (!value) return true;
-          return !this.expiryDate || value < this.expiryDate;
-        },
-        message: 'Manufacturing date must be before expiry date'
-      }
-    },
-    expiryDate: {
-      type: Date,
-      validate: {
-        validator: function (value) {
-          if (!value) return true;
-          return !this.manufacturingDate || value > this.manufacturingDate;
-        },
-        message: 'Expiry date must be after manufacturing date'
-      }
-    },
+   
     status: {
       type: String,
       enum: {
