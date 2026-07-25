@@ -8,6 +8,7 @@ const productRoutes = require('./routes/productRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const supplierRoutes = require('./routes/supplierRoutes');
 const purchaseRoutes = require('./routes/purchaseRoutes');
+const inventoryRoutes = require('./routes/inventoryRoutes');
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
@@ -31,6 +32,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/suppliers', supplierRoutes);
 app.use('/api/purchases', purchaseRoutes);
 app.use('/api/stock-receiving', stockReceivingRoutes);
+app.use('/api/inventory', inventoryRoutes);
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
