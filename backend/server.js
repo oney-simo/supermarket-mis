@@ -1,3 +1,4 @@
+const stockReceivingRoutes = require('./routes/stockReceivingRoutes');
 const path = require('path');
 const express = require('express');
 const cors = require('cors');
@@ -29,7 +30,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/suppliers', supplierRoutes);
 app.use('/api/purchases', purchaseRoutes);
-
+app.use('/api/stock-receiving', stockReceivingRoutes);
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
