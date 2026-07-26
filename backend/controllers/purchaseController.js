@@ -1,3 +1,4 @@
+const Supplier = require('../models/Supplier');
 const Purchase = require('../models/Purchase');
 const PurchaseItem = require('../models/PurchaseItems');
 
@@ -17,6 +18,22 @@ exports.createPurchase = async (req, res) => {
             items
         } = req.body;
 
+        // Check supplier exists
+const supplierExists = await Supplier.findById(supplier);
+
+if (!supplierExists) {
+    return res.status(404).json({
+        message: "Supplier not found"
+    });
+}
+
+
+        if (!items || items.length === 0){
+            return res.status(400).json({
+                message:"Purchase must contain at least one product"
+            });
+        }
+
 
         const purchase = await Purchase.create({
             supplier,
@@ -29,7 +46,7 @@ exports.createPurchase = async (req, res) => {
         });
 
 
-        const purchaseItems = items.map(item => ({
+        const purchaseItems = (items || []).map(item => ({
             purchase: purchase._id,
             product: item.product,
             quantity: item.quantity,

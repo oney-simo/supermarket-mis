@@ -5,7 +5,10 @@ const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 exports.getProducts = async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 });
+  const products = await Product.find()
+  .populate('category')
+  .populate('supplier')
+  .sort({ createdAt: -1 });
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -18,7 +21,9 @@ exports.getProductById = async (req, res) => {
       return res.status(400).json({ message: 'Invalid product ID' });
     }
 
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id)
+  .populate('category')
+  .populate('supplier');
 
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
@@ -40,9 +45,13 @@ exports.createProduct = async (req, res) => {
       return res.status(400).json({ message: 'Validation failed', errors: error.errors });
     }
 
-    if (error.code === 11000) {
-      return res.status(400).json({ message: 'SKU already exists' });
-    }
+   if (error.code === 11000) {
+    const field = Object.keys(error.keyPattern)[0];
+
+    return res.status(400).json({
+        message: `${field} already exists`
+    });
+}
 
     res.status(500).json({ message: 'Server error', error: error.message });
   }
