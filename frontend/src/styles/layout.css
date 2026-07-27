@@ -1,0 +1,80 @@
+/* Main application layout */
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+
+/* Navbar */
+
+.navbar {
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+
+/* Main area */
+
+.app-container {
+  display: flex;
+}
+
+
+/* Sidebar */
+
+.sidebar {
+  width: 250px;
+  min-height: calc(100vh - 60px);
+  padding: 20px;
+}
+
+
+/* Content area */
+
+.content {
+  flex: 1;
+  padding: 20px;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+
+.sidebar a {
+  text-decoration: none;
+  padding: 8px;
+}
+
+
+.sidebar h4 {
+  margin-top: 20px;
+  margin-bottom: 5px;
+}
+
+
+.navbar h2 {
+  margin: 0;
+}
+
+
+.sidebar {
+  width: 250px;
+  transition: 0.3s;
+}
+
+
+.sidebar.collapsed {
+  width: 70px;
+}
+
+
+.sidebar.collapsed a {
+  text-align: center;
+}
