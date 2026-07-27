@@ -1,4 +1,5 @@
 const Customer = require('../models/Customer');
+const Sale = require('../models/sales');
 
 
 // CREATE CUSTOMER
@@ -127,6 +128,42 @@ exports.deleteCustomer = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to delete customer',
+      error: error.message
+    });
+  }
+};
+
+exports.getCustomerPurchases = async (req, res) => {
+  try {
+    const customerId = req.params.id;
+
+    const purchases = await Sale.find({
+      customer: customerId
+    })
+    .sort({ createdAt: -1 })
+    .select(
+      'receiptNumber grandTotal paymentMethod paymentStatus createdAt'
+    );
+
+    const totalSpent = purchases.reduce(
+      (sum, sale) => sum + sale.grandTotal,
+      0
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Customer purchase history retrieved successfully',
+      data: {
+        totalOrders: purchases.length,
+        totalSpent,
+        purchases
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve customer purchases',
       error: error.message
     });
   }
