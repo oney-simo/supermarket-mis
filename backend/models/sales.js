@@ -9,11 +9,17 @@ const saleSchema = new mongoose.Schema(
       trim: true,
       uppercase: true
     },
+     customer: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'Customer',
+  default: null
+},
     customerName: {
       type: String,
       trim: true,
       default: 'Walk-in Customer'
     },
+   
     totalAmount: {
       type: Number,
       required: [true, 'Total amount is required'],

@@ -6,13 +6,43 @@ const Product = require('../models/Product');
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
+const resolveCustomerId = (customer, customerId) => {
+  if (customerId) {
+    return customerId;
+  }
+
+  if (!customer) {
+    return null;
+  }
+
+  if (typeof customer === 'string') {
+    return customer;
+  }
+
+  if (typeof customer === 'object' && customer._id) {
+    return customer._id;
+  }
+
+  return null;
+};
+
 // CREATE SALE (CHECKOUT POS)
 exports.createSale = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
-    const { receiptNumber, customerName, items, discount = 0, tax = 0, paymentMethod, notes } = req.body;
+    const {
+      receiptNumber,
+      customer,
+      customerId,
+      customerName,
+      items,
+      discount = 0,
+      tax = 0,
+      paymentMethod,
+      notes
+    } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       await session.abortTransaction();
@@ -82,13 +112,17 @@ exports.createSale = async (req, res) => {
     }
 
     const grandTotal = calculatedTotal - discount + tax;
+    const resolvedCustomerId = resolveCustomerId(customer, customerId);
+    const resolvedCustomerName =
+      customerName || (typeof customer === 'object' ? customer.name : null) || 'Walk-in Customer';
 
     // STEP 4: The Database Transaction (Atomic Execution)
     // Create the Sale Header
     const sale = await Sale.create(
       [{
         receiptNumber,
-        customerName,
+        customer: resolvedCustomerId,
+        customerName: resolvedCustomerName,
         totalAmount: calculatedTotal,
         discount,
         tax,

@@ -15,6 +15,7 @@ const reportRoutes = require('./routes/reportRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
+const customerRoutes = require('./routes/customerRoutes');
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
@@ -44,6 +45,7 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/customers', customerRoutes);
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
