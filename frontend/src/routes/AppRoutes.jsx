@@ -19,6 +19,14 @@ import Settings from "../pages/Settings";
 function AppRoutes() {
   return (
     <Routes>
+      <Route
+        path="/"
+        element={
+          <MainLayout>
+            <Dashboard />
+          </MainLayout>
+        }
+      />
 
       <Route
         path="/dashboard"
