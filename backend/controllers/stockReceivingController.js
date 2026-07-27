@@ -1,6 +1,7 @@
 const StockReceiving = require('../models/stockReceiving');
 const Inventory = require('../models/inventory');
 const Purchase = require('../models/purchase');
+const { logActivity } = require('../services/activityLogger');
 
 
 // RECEIVE STOCK
@@ -104,6 +105,16 @@ exports.receiveStock = async (req, res) => {
 
 
 
+            await logActivity({
+                req,
+                user: { userId: req.user?.userId },
+                action: 'receive',
+                module: 'Inventory',
+                description: `Received stock for purchase ${existingPurchase.invoiceNumber || purchase}`,
+                referenceId: receiving._id.toString(),
+                referenceModel: 'StockReceiving'
+            });
+
             return res.status(201).json({
 
                 message: "Stock received successfully",
@@ -120,6 +131,16 @@ exports.receiveStock = async (req, res) => {
 
 
         // Damaged stock response
+        await logActivity({
+            req,
+            user: { userId: req.user?.userId },
+            action: 'record_damage',
+            module: 'Inventory',
+            description: `Recorded damaged stock for purchase ${existingPurchase.invoiceNumber || purchase}`,
+            referenceId: receiving._id.toString(),
+            referenceModel: 'StockReceiving'
+        });
+
         res.status(201).json({
 
             message: "Damaged stock recorded",

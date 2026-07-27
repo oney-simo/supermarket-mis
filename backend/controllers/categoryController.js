@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Category = require('../models/Category');
+const { logActivity } = require('../services/activityLogger');
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
@@ -57,6 +58,16 @@ exports.createCategory = async (req, res) => {
 
     const savedCategory = await category.save();
 
+    await logActivity({
+      req,
+      user: { userId: req.user?.userId },
+      action: 'create',
+      module: 'Products',
+      description: `Created category ${savedCategory.name}`,
+      referenceId: savedCategory._id.toString(),
+      referenceModel: 'Category'
+    });
+
     res.status(201).json(savedCategory);
 
   } catch (error) {
@@ -109,6 +120,15 @@ exports.updateCategory = async (req, res) => {
       });
     }
 
+    await logActivity({
+      req,
+      user: { userId: req.user?.userId },
+      action: 'update',
+      module: 'Products',
+      description: `Updated category ${updatedCategory.name}`,
+      referenceId: updatedCategory._id.toString(),
+      referenceModel: 'Category'
+    });
 
     res.status(200).json(updatedCategory);
 
@@ -144,6 +164,15 @@ exports.deleteCategory = async (req, res) => {
       });
     }
 
+    await logActivity({
+      req,
+      user: { userId: req.user?.userId },
+      action: 'delete',
+      module: 'Products',
+      description: `Deleted category ${deletedCategory.name}`,
+      referenceId: deletedCategory._id.toString(),
+      referenceModel: 'Category'
+    });
 
     res.status(200).json({
       message: 'Category deleted successfully'

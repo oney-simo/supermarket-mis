@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const { logActivity } = require('../services/activityLogger');
 
 const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
 
@@ -23,6 +24,16 @@ exports.createUser = async (req, res) => {
       password: hashedPassword,
       role: role || 'cashier',
       fullName
+    });
+
+    await logActivity({
+      req,
+      user: { userId: req.user?.userId },
+      action: 'create',
+      module: 'Users',
+      description: `Created user ${username}`,
+      referenceId: user._id.toString(),
+      referenceModel: 'User'
     });
 
     res.status(201).json({
@@ -58,6 +69,16 @@ exports.resetPassword = async (req, res) => {
     user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
 
+    await logActivity({
+      req,
+      user: { userId: req.user?.userId },
+      action: 'reset_password',
+      module: 'Users',
+      description: `Reset password for user ${user.username}`,
+      referenceId: user._id.toString(),
+      referenceModel: 'User'
+    });
+
     res.status(200).json({ message: 'Password reset successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -76,6 +97,16 @@ exports.deleteUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    await logActivity({
+      req,
+      user: { userId: req.user?.userId },
+      action: 'delete',
+      module: 'Users',
+      description: `Deleted user ${user.username}`,
+      referenceId: user._id.toString(),
+      referenceModel: 'User'
+    });
 
     res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {

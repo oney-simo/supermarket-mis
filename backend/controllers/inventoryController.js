@@ -1,4 +1,5 @@
 const Inventory = require('../models/inventory');
+const { logActivity } = require('../services/activityLogger');
 
 
 // GET ALL INVENTORY

@@ -3,6 +3,7 @@ const Sale = require('../models/sales');
 const SaleItem = require('../models/salesItems');
 const Inventory = require('../models/inventory');
 const Product = require('../models/Product');
+const { logActivity } = require('../services/activityLogger');
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
@@ -144,6 +145,16 @@ exports.createSale = async (req, res) => {
     // Commit the transaction
     await session.commitTransaction();
     session.endSession();
+
+    await logActivity({
+      req,
+      user: { userId: req.user?.userId },
+      action: 'create',
+      module: 'Sales',
+      description: `Created sale ${sale[0].receiptNumber}`,
+      referenceId: sale[0]._id.toString(),
+      referenceModel: 'Sale'
+    });
 
     return res.status(201).json({
       message: 'Sale completed successfully',

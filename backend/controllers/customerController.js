@@ -1,11 +1,22 @@
 const Customer = require('../models/Customer');
 const Sale = require('../models/sales');
+const { logActivity } = require('../services/activityLogger');
 
 
 // CREATE CUSTOMER
 exports.createCustomer = async (req, res) => {
   try {
     const customer = await Customer.create(req.body);
+
+    await logActivity({
+      req,
+      user: { userId: req.user?.userId },
+      action: 'create',
+      module: 'Customers',
+      description: `Created customer ${customer.name || customer.phone || customer._id}`,
+      referenceId: customer._id.toString(),
+      referenceModel: 'Customer'
+    });
 
     res.status(201).json({
       success: true,
@@ -91,6 +102,16 @@ exports.updateCustomer = async (req, res) => {
       });
     }
 
+    await logActivity({
+      req,
+      user: { userId: req.user?.userId },
+      action: 'update',
+      module: 'Customers',
+      description: `Updated customer ${customer.name || customer.phone || customer._id}`,
+      referenceId: customer._id.toString(),
+      referenceModel: 'Customer'
+    });
+
     res.status(200).json({
       success: true,
       message: 'Customer updated successfully',
@@ -118,6 +139,16 @@ exports.deleteCustomer = async (req, res) => {
         message: 'Customer not found'
       });
     }
+
+    await logActivity({
+      req,
+      user: { userId: req.user?.userId },
+      action: 'delete',
+      module: 'Customers',
+      description: `Deleted customer ${customer.name || customer.phone || customer._id}`,
+      referenceId: customer._id.toString(),
+      referenceModel: 'Customer'
+    });
 
     res.status(200).json({
       success: true,

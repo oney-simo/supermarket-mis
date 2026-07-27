@@ -1,6 +1,7 @@
 const Supplier = require('../models/supplier');
 const Purchase = require('../models/purchase');
 const PurchaseItem = require('../models/purchaseItems');
+const { logActivity } = require('../services/activityLogger');
 
 
 // CREATE PURCHASE
@@ -57,6 +58,15 @@ if (!supplierExists) {
 
         await PurchaseItem.insertMany(purchaseItems);
 
+        await logActivity({
+            req,
+            user: { userId: req.user?.userId },
+            action: 'create',
+            module: 'Purchases',
+            description: `Created purchase ${purchase.invoiceNumber}`,
+            referenceId: purchase._id.toString(),
+            referenceModel: 'Purchase'
+        });
 
         res.status(201).json({
             message: "Purchase created successfully",
@@ -167,6 +177,16 @@ exports.deletePurchase = async(req,res)=>{
             purchase:req.params.id
         });
 
+
+        await logActivity({
+            req,
+            user: { userId: req.user?.userId },
+            action: 'delete',
+            module: 'Purchases',
+            description: `Deleted purchase ${purchase.invoiceNumber}`,
+            referenceId: purchase._id.toString(),
+            referenceModel: 'Purchase'
+        });
 
         res.status(200).json({
             message:"Purchase deleted successfully"
