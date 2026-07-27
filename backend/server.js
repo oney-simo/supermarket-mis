@@ -17,6 +17,7 @@ const activityLogRoutes = require('./routes/activityLogRoutes');
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 const customerRoutes = require('./routes/customerRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
@@ -48,6 +49,7 @@ app.use('/api/activity-logs', activityLogRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/customers', customerRoutes);
+app.use('/api/settings', settingsRoutes);
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
