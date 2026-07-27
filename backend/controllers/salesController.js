@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const Sale = require('../models/Sales');
-const SaleItem = require('../models/SalesItems');
-const Inventory = require('../models/Inventory');
+const Sale = require('../models/sales');
+const SaleItem = require('../models/salesItems');
+const Inventory = require('../models/inventory');
 const Product = require('../models/Product');
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);

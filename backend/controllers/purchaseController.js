@@ -1,6 +1,6 @@
-const Supplier = require('../models/Supplier');
-const Purchase = require('../models/Purchase');
-const PurchaseItem = require('../models/PurchaseItems');
+const Supplier = require('../models/supplier');
+const Purchase = require('../models/purchase');
+const PurchaseItem = require('../models/purchaseItems');
 
 
 // CREATE PURCHASE

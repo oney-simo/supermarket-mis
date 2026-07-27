@@ -1,6 +1,6 @@
-const StockReceiving = require('../models/StockReceiving');
-const Inventory = require('../models/Inventory');
-const Purchase = require('../models/Purchase');
+const StockReceiving = require('../models/stockReceiving');
+const Inventory = require('../models/inventory');
+const Purchase = require('../models/purchase');
 
 
 // RECEIVE STOCK
