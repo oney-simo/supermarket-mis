@@ -57,13 +57,15 @@ exports.login = async (req, res) => {
 
 exports.logout = async (req, res) => {
   try {
+    const userId = req.user?.userId;
+
     await logActivity({
       req,
-      user: { userId: req.user?.userId },
+      user: { userId },
       action: 'logout',
       module: 'Authentication',
-      description: 'User logged out successfully',
-      referenceId: req.user?.userId?.toString() || null,
+      description: 'User logged out',
+      referenceId: userId ? userId.toString() : null,
       referenceModel: 'User'
     });
 

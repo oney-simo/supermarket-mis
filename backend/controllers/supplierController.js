@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Supplier = require('../models/supplier');
+const { logActivity } = require('../services/activityLogger');
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
@@ -64,6 +65,16 @@ exports.createSupplier = async (req, res) => {
     const savedSupplier = await supplier.save();
 
 
+    await logActivity({
+      req,
+      user: { userId: req.user?.userId },
+      action: 'create',
+      module: 'Suppliers',
+      description: `Created supplier ${savedSupplier.name}`,
+      referenceId: savedSupplier._id.toString(),
+      referenceModel: 'Supplier'
+    });
+
     res.status(201).json(savedSupplier);
 
 
@@ -116,6 +127,16 @@ exports.updateSupplier = async (req, res) => {
     }
 
 
+    await logActivity({
+      req,
+      user: { userId: req.user?.userId },
+      action: 'update',
+      module: 'Suppliers',
+      description: `Updated supplier ${updatedSupplier.name}`,
+      referenceId: updatedSupplier._id.toString(),
+      referenceModel: 'Supplier'
+    });
+
     res.status(200).json(updatedSupplier);
 
 
@@ -152,6 +173,16 @@ exports.deleteSupplier = async (req, res) => {
       });
     }
 
+
+    await logActivity({
+      req,
+      user: { userId: req.user?.userId },
+      action: 'delete',
+      module: 'Suppliers',
+      description: `Deleted supplier ${deletedSupplier.name}`,
+      referenceId: deletedSupplier._id.toString(),
+      referenceModel: 'Supplier'
+    });
 
     res.status(200).json({
       message: 'Supplier deleted successfully'

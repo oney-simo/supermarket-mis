@@ -39,25 +39,20 @@ exports.logActivity = async ({
     return null;
   }
 
-  try {
-    const resolvedUserId = user?.userId || user?.id || user || null;
+  const resolvedUserId = user?.userId || user?.id || user || null;
 
-    const logEntry = await ActivityLog.create({
-      user: resolvedUserId,
-      action,
-      module,
-      description,
-      referenceId: normalizeReferenceId(referenceId),
-      referenceModel,
-      ipAddress: getClientIp(req),
-      metadata
-    });
+  const logEntry = await ActivityLog.create({
+    user: resolvedUserId,
+    action,
+    module,
+    description,
+    referenceId: normalizeReferenceId(referenceId),
+    referenceModel,
+    ipAddress: getClientIp(req),
+    metadata
+  });
 
-    return logEntry;
-  } catch (error) {
-    console.error('Activity log error:', error.message);
-    return null;
-  }
+  return logEntry;
 };
 
 exports.buildFilterQuery = ({ user, action, module, referenceModel, startDate, endDate }) => {

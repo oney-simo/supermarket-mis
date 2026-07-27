@@ -62,7 +62,7 @@ exports.createCategory = async (req, res) => {
       req,
       user: { userId: req.user?.userId },
       action: 'create',
-      module: 'Products',
+      module: 'Categories',
       description: `Created category ${savedCategory.name}`,
       referenceId: savedCategory._id.toString(),
       referenceModel: 'Category'
@@ -124,7 +124,7 @@ exports.updateCategory = async (req, res) => {
       req,
       user: { userId: req.user?.userId },
       action: 'update',
-      module: 'Products',
+      module: 'Categories',
       description: `Updated category ${updatedCategory.name}`,
       referenceId: updatedCategory._id.toString(),
       referenceModel: 'Category'
@@ -168,7 +168,7 @@ exports.deleteCategory = async (req, res) => {
       req,
       user: { userId: req.user?.userId },
       action: 'delete',
-      module: 'Products',
+      module: 'Categories',
       description: `Deleted category ${deletedCategory.name}`,
       referenceId: deletedCategory._id.toString(),
       referenceModel: 'Category'

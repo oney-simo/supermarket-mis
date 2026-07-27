@@ -110,7 +110,7 @@ exports.receiveStock = async (req, res) => {
                 user: { userId: req.user?.userId },
                 action: 'receive',
                 module: 'Inventory',
-                description: `Received stock for purchase ${existingPurchase.invoiceNumber || purchase}`,
+                description: `Received stock for batch ${batchNumber}`,
                 referenceId: receiving._id.toString(),
                 referenceModel: 'StockReceiving'
             });
@@ -136,7 +136,7 @@ exports.receiveStock = async (req, res) => {
             user: { userId: req.user?.userId },
             action: 'record_damage',
             module: 'Inventory',
-            description: `Recorded damaged stock for purchase ${existingPurchase.invoiceNumber || purchase}`,
+            description: `Recorded damaged stock for batch ${batchNumber}`,
             referenceId: receiving._id.toString(),
             referenceModel: 'StockReceiving'
         });
