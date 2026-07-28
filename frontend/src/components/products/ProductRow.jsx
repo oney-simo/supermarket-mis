@@ -1,4 +1,4 @@
-function ProductRow({ product }) {
+function ProductRow({ product, onDelete, onEdit }) {
   return (
     <tr>
 
@@ -13,9 +13,9 @@ function ProductRow({ product }) {
       <td>{product.stockQuantity}</td>
 
       <td>
-        <button>Edit</button>
+        <button onClick={() => onEdit(product)}>Edit</button>
 
-        <button>Delete</button>
+        <button onClick={() => onDelete(product._id)}>Delete</button>
       </td>
 
     </tr>

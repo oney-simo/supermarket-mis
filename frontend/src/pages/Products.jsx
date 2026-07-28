@@ -11,6 +11,12 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [productToEdit, setProductToEdit] = useState(null);
+
+  const handleEditClick = (product) => {
+    setProductToEdit(product);
+    setShowForm(true);
+  };
 
   // Fetch products from backend
   const fetchProducts = async () => {
@@ -26,7 +32,19 @@ function Products() {
   useEffect(() => {
     fetchProducts();
   }, []);
+  
+// Handle product deletion
+  const handleDeleteProduct = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this product?")) return;
 
+    try {
+      await api.delete(`/products/${id}`);
+      fetchProducts();
+    } catch (error) {
+      console.log("Delete failed:", error);
+      alert("Failed to delete product.");
+    }
+  };
   // Filter products by search
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(search.toLowerCase())
@@ -43,19 +61,27 @@ function Products() {
       <SearchBar
         search={search}
         setSearch={setSearch}
-        setShowForm={setShowForm}
+        setShowForm={() => {
+          setProductToEdit(null);
+          setShowForm(true);
+        }}
       />
 
-      {showForm && (
+     {showForm && (
         <AddProductForm
-          onProductAdded={() => {
+          productToEdit={productToEdit}
+          onProductSaved={() => {
             fetchProducts();
             setShowForm(false);
+            setProductToEdit(null);
           }}
         />
       )}
-
-      <ProductTable products={filteredProducts} />
+     <ProductTable
+        products={filteredProducts}
+        onDelete={handleDeleteProduct}
+        onEdit={handleEditClick}
+      />
 
     </div>
   );

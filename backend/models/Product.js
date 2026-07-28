@@ -19,9 +19,9 @@ barcode: {
   type: String,
   unique: true,
   sparse: true,
-  trim: true
+  trim: true,
+  default: undefined
 },
-
     category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',

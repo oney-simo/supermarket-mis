@@ -4,6 +4,39 @@ const { logActivity } = require('../services/activityLogger');
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
+const sanitizeProductPayload = (payload) => {
+  const sanitizedPayload = { ...payload };
+
+  if (typeof sanitizedPayload.name === 'string') {
+    sanitizedPayload.name = sanitizedPayload.name.trim();
+  }
+
+  if (typeof sanitizedPayload.sku === 'string') {
+    sanitizedPayload.sku = sanitizedPayload.sku.trim().toUpperCase();
+  }
+
+  if (typeof sanitizedPayload.barcode === 'string') {
+    sanitizedPayload.barcode = sanitizedPayload.barcode.trim();
+    if (!sanitizedPayload.barcode) {
+      delete sanitizedPayload.barcode;
+    }
+  }
+
+  if (typeof sanitizedPayload.description === 'string') {
+    sanitizedPayload.description = sanitizedPayload.description.trim();
+  }
+
+  if (typeof sanitizedPayload.unit === 'string') {
+    sanitizedPayload.unit = sanitizedPayload.unit.trim();
+  }
+
+  if (typeof sanitizedPayload.category === 'string' && !sanitizedPayload.category.trim()) {
+    delete sanitizedPayload.category;
+  }
+
+  return sanitizedPayload;
+};
+
 exports.getProducts = async (req, res) => {
   try {
   const products = await Product.find()
@@ -38,7 +71,8 @@ exports.getProductById = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
   try {
-    const product = new Product(req.body);
+    const productPayload = sanitizeProductPayload(req.body);
+    const product = new Product(productPayload);
     const savedProduct = await product.save();
 
     await logActivity({
@@ -75,7 +109,9 @@ exports.updateProduct = async (req, res) => {
       return res.status(400).json({ message: 'Invalid product ID' });
     }
 
-    const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    const productPayload = sanitizeProductPayload(req.body);
+
+    const updatedProduct = await Product.findByIdAndUpdate(req.params.id, productPayload, {
       new: true,
       runValidators: true
     });

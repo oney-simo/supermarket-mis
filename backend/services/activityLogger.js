@@ -25,6 +25,33 @@ const getClientIp = (req) => {
   return req.ip || req.connection?.remoteAddress || null;
 };
 
+const resolveActivityUserId = (user) => {
+  if (!user) {
+    return null;
+  }
+
+  if (typeof user === 'string') {
+    return user.trim() || null;
+  }
+
+  if (typeof user === 'object') {
+    const candidate = user.userId ?? user.id ?? null;
+
+    if (typeof candidate === 'string') {
+      return candidate.trim() || null;
+    }
+
+    if (candidate && typeof candidate === 'object' && candidate.toString) {
+      const value = candidate.toString();
+      return value && value !== '[object Object]' ? value : null;
+    }
+  }
+
+  return null;
+};
+
+exports.resolveActivityUserId = resolveActivityUserId;
+
 exports.logActivity = async ({
   req,
   user,
@@ -39,7 +66,7 @@ exports.logActivity = async ({
     return null;
   }
 
-  const resolvedUserId = user?.userId || user?.id || user || null;
+  const resolvedUserId = resolveActivityUserId(user);
 
   const logEntry = await ActivityLog.create({
     user: resolvedUserId,
