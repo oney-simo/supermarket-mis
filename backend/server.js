@@ -29,9 +29,10 @@ app.use(cors());
 app.use(express.json());
 
 connectDB().then(() => {
-  if (process.env.NODE_ENV !== 'test') {
+  // Demo seeding is opt-in only. Set SEED_DEMO=true in your environment to seed demo data.
+  if (process.env.SEED_DEMO === 'true') {
     seedStockReceivingDemoData().catch((error) => {
-      console.warn('Demo data seeding skipped:', error.message);
+      console.warn('Demo data seeding failed/skipped:', error.message);
     });
   }
 });

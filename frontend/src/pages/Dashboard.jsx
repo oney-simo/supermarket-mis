@@ -16,6 +16,7 @@ import "../styles/dashboard.css";
 
 function Dashboard() {
   const [dashboardData, setDashboardData] = useState(null);
+  const [dashboardAlerts, setDashboardAlerts] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -29,10 +30,21 @@ function Dashboard() {
       }
     };
 
+    const fetchDashboardAlerts = async () => {
+      try {
+        const response = await api.get("/dashboard/alerts");
+        setDashboardAlerts(response.data.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     fetchDashboard();
+    fetchDashboardAlerts();
 
     const handleSalesUpdated = () => {
       fetchDashboard();
+      fetchDashboardAlerts();
     };
 
     window.addEventListener('sales:updated', handleSalesUpdated);
@@ -84,7 +96,7 @@ function Dashboard() {
         />
       </div>
 
-      <StockAlert products={dashboardData.lowStockProducts} />
+      <StockAlert products={Array.isArray(dashboardAlerts?.lowStockProducts) ? dashboardAlerts.lowStockProducts : (Array.isArray(dashboardData?.lowStockProducts) ? dashboardData.lowStockProducts : [])} />
     </div>
   );
 }

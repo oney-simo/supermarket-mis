@@ -138,7 +138,7 @@ export default function POSModal({ isOpen, onClose, products, customers, onSucce
 
           <div style={{ display: 'flex', gap: '15px', marginBottom: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
             <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Discount ($)</label>
+              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Discount</label>
               <input
                 type="number"
                 min="0"
@@ -149,7 +149,7 @@ export default function POSModal({ isOpen, onClose, products, customers, onSucce
               />
             </div>
             <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Tax ($)</label>
+              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Tax</label>
               <input
                 type="number"
                 min="0"
@@ -172,7 +172,7 @@ export default function POSModal({ isOpen, onClose, products, customers, onSucce
           </div>
 
           <div style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '20px', textAlign: 'right', color: '#28a745' }}>
-            Grand Total: ${calculateGrandTotal().toFixed(2)}
+            Grand Total: TZS {calculateGrandTotal().toFixed(2)}
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>

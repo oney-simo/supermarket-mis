@@ -70,51 +70,18 @@ exports.getDashboardSummary = async (req, res) => {
       }
     ]);
 
-    const stockSummary = await Product.aggregate([
-      {
-        $lookup: {
-          from: 'inventories',
-          let: { productId: '$_id' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ['$product', '$$productId'] },
-                    { $eq: ['$status', 'Available'] }
-                  ]
-                }
-              }
-            },
-            {
-              $group: {
-                _id: null,
-                totalQuantity: { $sum: '$quantity' }
-              }
-            }
-          ],
-          as: 'inventorySummary'
-        }
-      },
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-          sku: 1,
-          reorderLevel: 1,
-          stockQuantity: {
-            $ifNull: [{ $arrayElemAt: ['$inventorySummary.totalQuantity', 0] }, 0]
-          }
-        }
-      }
-    ]);
-
-    const lowStockProducts = stockSummary.filter((product) => {
-      const reorderLevel = product.reorderLevel ?? 0;
-      return product.stockQuantity > 0 && product.stockQuantity <= reorderLevel;
-    });
-
-    const outOfStockProducts = stockSummary.filter((product) => product.stockQuantity === 0);
+    // compute inventory-based stats (match Inventory page logic)
+    const inventories = await Inventory.find().populate('product', 'name sku reorderLevel');
+    const stats = {
+      available: inventories.filter(item => item.status === 'Available').length,
+      lowStock: inventories.filter(item => {
+        if (!item.product) return false;
+        if (item.quantity === 0) return false;
+        return item.quantity <= (item.product.reorderLevel ?? 10);
+      }).length,
+      expired: inventories.filter(item => item.status === 'Expired').length,
+      damaged: inventories.filter(item => item.status === 'Damaged').length,
+    };
 
     res.status(200).json({
       totalProducts: productCount?.count ?? 0,
@@ -122,8 +89,7 @@ exports.getDashboardSummary = async (req, res) => {
       totalCustomers: customerCount?.count ?? 0,
       todaySalesCount: salesSummary?.salesCount ?? 0,
       todayRevenue: salesSummary?.revenue ?? 0,
-      lowStockProducts,
-      outOfStockProducts
+      inventoryStats: stats
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -180,65 +146,68 @@ exports.getRecentPurchases = async (req, res) => {
 };
 exports.getDashboardAlerts = async (req, res) => {
   try {
-    const stockSummary = await Product.aggregate([
-      {
-        $lookup: {
-          from: 'inventories',
-          let: { productId: '$_id' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ['$product', '$$productId'] },
-                    { $eq: ['$status', 'Available'] }
-                  ]
-                }
-              }
-            },
-            {
-              $group: {
-                _id: null,
-                totalQuantity: { $sum: '$quantity' }
-              }
-            }
-          ],
-          as: 'inventorySummary'
-        }
-      },
-      {
-        $project: {
-          _id: 0,
-          name: 1,
-          sku: 1,
-          reorderLevel: 1,
-          stockQuantity: {
-            $ifNull: [
-              { $arrayElemAt: ['$inventorySummary.totalQuantity', 0] },
-              0
-            ]
-          }
-        }
+    const inventories = await Inventory.find().populate('product', 'name sku reorderLevel');
+
+    const alertMap = new Map();
+
+    inventories.forEach((item) => {
+      const product = item.product;
+      if (!product) return;
+
+      const id = String(product._id);
+      const entry = alertMap.get(id) || {
+        _id: product._id,
+        name: product.name,
+        sku: product.sku,
+        reorderLevel: product.reorderLevel ?? 10,
+        stockQuantity: 0,
+        expiredQuantity: 0,
+        lowStockQuantity: 0,
+        outOfStockQuantity: 0
+      };
+
+      // Match Inventory page logic exactly:
+      // - out of stock when quantity is 0
+      // - low stock when quantity > 0 and <= reorderLevel
+      // - expired when status is 'Expired'
+      if (item.quantity === 0) {
+        entry.outOfStockQuantity += 1;
+      } else if (item.quantity <= (product.reorderLevel ?? 10)) {
+        entry.lowStockQuantity += 1;
       }
-    ]);
 
-    const lowStockProducts = stockSummary.filter((product) => {
-      return (
-        product.stockQuantity > 0 &&
-        product.stockQuantity <= product.reorderLevel
-      );
+      if (item.status === 'Expired') {
+        entry.expiredQuantity += item.quantity || 0;
+      }
+
+      // use available stock quantity for display (same idea as inventory module's stock level)
+      if (item.status === 'Available') {
+        entry.stockQuantity += item.quantity || 0;
+      }
+
+      alertMap.set(id, entry);
     });
 
-    const outOfStockProducts = stockSummary.filter((product) => {
-      return product.stockQuantity === 0;
+    const allProducts = Array.from(alertMap.values());
+
+    const outOfStockProducts = allProducts.filter((product) => product.outOfStockQuantity > 0 || product.stockQuantity === 0);
+    const lowStockProducts = allProducts.filter((product) => product.lowStockQuantity > 0 || (product.stockQuantity > 0 && product.stockQuantity <= (product.reorderLevel ?? 10)));
+    const expiredProducts = allProducts.filter((product) => product.expiredQuantity > 0);
+
+    const combinedMap = new Map();
+    [...lowStockProducts, ...outOfStockProducts, ...expiredProducts].forEach((prod) => {
+      combinedMap.set(String(prod._id), prod);
     });
+
+    const combinedAlertProducts = Array.from(combinedMap.values());
 
     res.status(200).json({
       success: true,
       message: 'Dashboard alerts retrieved successfully',
       data: {
-        lowStockProducts,
-        outOfStockProducts
+        lowStockProducts: combinedAlertProducts,
+        outOfStockProducts,
+        expiredProducts
       }
     });
 

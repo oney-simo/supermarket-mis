@@ -28,7 +28,7 @@ export default function SalesTable({ sales, loading }) {
               <td style={{ padding: '12px', fontWeight: 'bold' }}>{sale.receiptNumber}</td>
               <td style={{ padding: '12px' }}>{sale.customerName}</td>
               <td style={{ padding: '12px', fontWeight: 'bold', color: '#28a745' }}>
-                ${sale.grandTotal?.toFixed(2)}
+                TZS {sale.grandTotal?.toFixed(2)}
               </td>
               <td style={{ padding: '12px' }}>{sale.paymentMethod}</td>
               <td style={{ padding: '12px' }}>

@@ -5,13 +5,15 @@ body {
   font-family: Inter, Arial, sans-serif;
   background: var(--surface);
   color: var(--text-strong);
+  overflow: hidden;
 }
 
 .app-shell {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  overflow: hidden;
 }
 
 .navbar {
@@ -23,6 +25,10 @@ body {
   background: var(--surface-strong);
   border-bottom: 1px solid var(--border);
   box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  transition: box-shadow 220ms ease, background-color 220ms ease;
 }
 
 .navbar__left,
@@ -69,6 +75,11 @@ body {
   flex-direction: column;
   overflow-y: auto;
   scrollbar-width: thin;
+  position: sticky;
+  top: 0;
+  height: calc(100vh - 68px);
+  align-self: flex-start;
+  transition: width 240ms ease, min-width 240ms ease, padding 240ms ease, transform 240ms ease;
 }
 
 .sidebar__brand {
@@ -156,6 +167,8 @@ body {
   padding: 24px;
   background: var(--surface);
   overflow-y: auto;
+  min-height: 0;
+  transition: padding 220ms ease;
 }
 
 .content__header {

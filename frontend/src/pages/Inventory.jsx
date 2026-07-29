@@ -98,37 +98,25 @@ function Inventory() {
       </div>
 
       {/* Summary Stat Cards */}
-      <div className="inventory-stats" style={{ display: "flex", gap: "15px", marginBottom: "20px" }}>
-        <div 
-          onClick={() => setStatusFilter("Available")} 
-          style={{ border: "1px solid #ccc", padding: "15px", flex: "1", cursor: "pointer", textAlign: "center" }}
-        >
-          <div>Available</div>
-          <div style={{ fontSize: "20px", fontWeight: "bold" }}>{stats.available}</div>
+      <div className="inventory-stats">
+        <div className="inventory-stat-card" onClick={() => setStatusFilter("Available") }>
+          <div className="inventory-stat-card__label">Available</div>
+          <div className="inventory-stat-card__value">{stats.available}</div>
         </div>
 
-        <div 
-          onClick={() => setStatusFilter("Low Stock")} 
-          style={{ border: "1px solid #ccc", padding: "15px", flex: "1", cursor: "pointer", textAlign: "center" }}
-        >
-          <div>Low Stock</div>
-          <div style={{ fontSize: "20px", fontWeight: "bold" }}>{stats.lowStock}</div>
+        <div className="inventory-stat-card" onClick={() => setStatusFilter("Low Stock") }>
+          <div className="inventory-stat-card__label">Low Stock</div>
+          <div className="inventory-stat-card__value">{stats.lowStock}</div>
         </div>
 
-        <div 
-          onClick={() => setStatusFilter("Expired")} 
-          style={{ border: "1px solid #ccc", padding: "15px", flex: "1", cursor: "pointer", textAlign: "center" }}
-        >
-          <div>Expired</div>
-          <div style={{ fontSize: "20px", fontWeight: "bold" }}>{stats.expired}</div>
+        <div className="inventory-stat-card" onClick={() => setStatusFilter("Expired") }>
+          <div className="inventory-stat-card__label">Expired</div>
+          <div className="inventory-stat-card__value">{stats.expired}</div>
         </div>
 
-        <div 
-          onClick={() => setStatusFilter("Damaged")} 
-          style={{ border: "1px solid #ccc", padding: "15px", flex: "1", cursor: "pointer", textAlign: "center" }}
-        >
-          <div>Damaged</div>
-          <div style={{ fontSize: "20px", fontWeight: "bold" }}>{stats.damaged}</div>
+        <div className="inventory-stat-card" onClick={() => setStatusFilter("Damaged") }>
+          <div className="inventory-stat-card__label">Damaged</div>
+          <div className="inventory-stat-card__value">{stats.damaged}</div>
         </div>
       </div>
 
@@ -145,19 +133,19 @@ function Inventory() {
         </div>
       )}
 
-      <div className="inventory-controls" style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
+      <div className="inventory-controls">
         <input
           type="text"
           placeholder="Search Product..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ padding: "8px", flex: "1" }}
+          className="inventory-search-input"
         />
 
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          style={{ padding: "8px" }}
+          className="inventory-status-select"
         >
           <option value="All">All Statuses ▼</option>
           <option value="Available">Available</option>
@@ -168,6 +156,7 @@ function Inventory() {
         </select>
       </div>
 
+      <div className="inventory-table-wrap">
       <table className="inventory-table">
         <thead>
           <tr>
@@ -180,6 +169,7 @@ function Inventory() {
             <th>Expiry Date</th>
             <th>Status</th>
             <th>Stock Alert</th>
+            <th>Action</th>
           </tr>
         </thead>
        <tbody>
@@ -210,6 +200,7 @@ function Inventory() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
