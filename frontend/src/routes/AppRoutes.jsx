@@ -1,7 +1,10 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
+import ProtectedRoute from "../components/ProtectedRoute";
 
+// Pages
+import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
 import Products from "../pages/Products";
 import Customers from "../pages/Customers";
@@ -16,136 +19,52 @@ import ActivityLogs from "../pages/ActivityLogs";
 import Settings from "../pages/Settings";
 import StockReceiving from "../pages/StockReceiving";
 
+// Wrapper component to apply MainLayout across all protected routes
+const ProtectedLayout = () => (
+  <MainLayout>
+    <Outlet />
+  </MainLayout>
+);
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <MainLayout>
-            <Dashboard />
-          </MainLayout>
-        }
-      />
+      {/* Public Route */}
+      <Route path="/login" element={<Login />} />
 
-      <Route
-        path="/dashboard"
-        element={
-          <MainLayout>
-            <Dashboard />
-          </MainLayout>
-        }
-      />
+      {/* Authenticated Application Layout */}
+      <Route element={<ProtectedLayout />}>
+        
+        {/* 1. Accessible by ALL authenticated users (Cashier, Manager & Admin) */}
+        <Route element={<ProtectedRoute allowedRoles={['cashier', 'manager', 'admin']} />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/sales" element={<Sales />} />
+          <Route path="/customers" element={<Customers />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/inventory" element={<Inventory />} />
+        </Route>
 
-      <Route
-        path="/products"
-        element={
-          <MainLayout>
-            <Products />
-          </MainLayout>
-        }
-      />
+        {/* 2. Manager & Admin Access Only */}
+        <Route element={<ProtectedRoute allowedRoles={['manager', 'admin']} />}>
+          <Route path="/stock-receiving" element={<StockReceiving />} />
+          <Route path="/suppliers" element={<Suppliers />} />
+          <Route path="/purchases" element={<Purchases />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/users" element={<Users />} />
+        </Route>
 
-      <Route
-        path="/customers"
-        element={
-          <MainLayout>
-            <Customers />
-          </MainLayout>
-        }
-      />
+        {/* 3. Admin Only Access */}
+        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+          <Route path="/activity-logs" element={<ActivityLogs />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
 
-      <Route
-        path="/sales"
-        element={
-          <MainLayout>
-            <Sales />
-          </MainLayout>
-        }
-      />
+      </Route>
 
-      <Route
-        path="/inventory"
-        element={
-          <MainLayout>
-            <Inventory />
-          </MainLayout>
-        }
-      />
-
-      <Route
-        path="/stock-receiving"
-        element={
-          <MainLayout>
-            <StockReceiving />
-          </MainLayout>
-        }
-      />
-
-      <Route
-        path="/categories"
-        element={
-          <MainLayout>
-            <Categories />
-          </MainLayout>
-        }
-      />
-
-      <Route
-        path="/suppliers"
-        element={
-          <MainLayout>
-            <Suppliers />
-          </MainLayout>
-        }
-      />
-
-      <Route
-        path="/purchases"
-        element={
-          <MainLayout>
-            <Purchases />
-          </MainLayout>
-        }
-      />
-
-      <Route
-        path="/reports"
-        element={
-          <MainLayout>
-            <Reports />
-          </MainLayout>
-        }
-      />
-
-      <Route
-        path="/users"
-        element={
-          <MainLayout>
-            <Users />
-          </MainLayout>
-        }
-      />
-
-      <Route
-        path="/activity-logs"
-        element={
-          <MainLayout>
-            <ActivityLogs />
-          </MainLayout>
-        }
-      />
-
-      <Route
-        path="/settings"
-        element={
-          <MainLayout>
-            <Settings />
-          </MainLayout>
-        }
-      />
-
+      {/* Catch-all: Redirect unknown routes to login */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }
