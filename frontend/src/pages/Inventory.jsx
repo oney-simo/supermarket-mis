@@ -12,8 +12,29 @@ function Inventory() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
 
+  // Defined first so it can be safely used by stats and filters
+  const getStockAlert = (item) => {
+    if (!item.product) return "";
+
+    if (item.quantity === 0) {
+      return "Out of Stock";
+    }
+
+    if (item.quantity <= item.product.reorderLevel) {
+      return "Low Stock";
+    }
+
+    return "Normal";
+  };
+
+  const stats = {
+    available: inventory.filter(item => item.status === "Available").length,
+    lowStock: inventory.filter(item => getStockAlert(item) === "Low Stock").length,
+    expired: inventory.filter(item => item.status === "Expired").length,
+    damaged: inventory.filter(item => item.status === "Damaged").length,
+  };
+
   const filteredInventory = inventory.filter((item) => {
-    // Adjust properties based on your backend response structure
     const productName = item.product?.name || "";
     const sku = item.product?.sku || "";
     
@@ -22,16 +43,19 @@ function Inventory() {
       sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.batchNumber?.toLowerCase().includes(searchTerm.toLowerCase());
       
-    const matchesStatus = statusFilter === "All" || item.status === statusFilter;
+    // Handle statusFilter matching either direct status or stock alert type
+    const matchesStatus = 
+      statusFilter === "All" || 
+      item.status === statusFilter || 
+      (statusFilter === "Low Stock" && getStockAlert(item) === "Low Stock");
 
     return matchesSearch && matchesStatus;
   });
 
- const handleFormSuccess = () => {
+  const handleFormSuccess = () => {
     setShowForm(false); // Close the form
     loadInventoryData(); // Call your existing data loading function to refresh the table
   };
-
 
   const loadInventoryData = async () => {
     try {
@@ -49,20 +73,6 @@ function Inventory() {
     loadInventoryData();
   }, []);
 
-  const getStockAlert = (item) => {
-    if (!item.product) return "";
-
-    if (item.quantity === 0) {
-      return "Out of Stock";
-    }
-
-    if (item.quantity <= item.product.reorderLevel) {
-      return "Low Stock";
-    }
-
-    return "Normal";
-  };
-
   if (loading) {
     return <LoadingSpinner text="Loading inventory..." />;
   }
@@ -74,10 +84,44 @@ function Inventory() {
         <p>Monitor stock levels, batches and expiry dates.</p>
       </div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-        {/* Your existing header title/p tags stay here */}
         <button onClick={() => setShowForm(!showForm)}>
           {showForm ? "Cancel" : "+ Add Stock Batch"}
         </button>
+      </div>
+
+      {/* Summary Stat Cards */}
+      <div className="inventory-stats" style={{ display: "flex", gap: "15px", marginBottom: "20px" }}>
+        <div 
+          onClick={() => setStatusFilter("Available")} 
+          style={{ border: "1px solid #ccc", padding: "15px", flex: "1", cursor: "pointer", textAlign: "center" }}
+        >
+          <div>Available</div>
+          <div style={{ fontSize: "20px", fontWeight: "bold" }}>{stats.available}</div>
+        </div>
+
+        <div 
+          onClick={() => setStatusFilter("Low Stock")} 
+          style={{ border: "1px solid #ccc", padding: "15px", flex: "1", cursor: "pointer", textAlign: "center" }}
+        >
+          <div>Low Stock</div>
+          <div style={{ fontSize: "20px", fontWeight: "bold" }}>{stats.lowStock}</div>
+        </div>
+
+        <div 
+          onClick={() => setStatusFilter("Expired")} 
+          style={{ border: "1px solid #ccc", padding: "15px", flex: "1", cursor: "pointer", textAlign: "center" }}
+        >
+          <div>Expired</div>
+          <div style={{ fontSize: "20px", fontWeight: "bold" }}>{stats.expired}</div>
+        </div>
+
+        <div 
+          onClick={() => setStatusFilter("Damaged")} 
+          style={{ border: "1px solid #ccc", padding: "15px", flex: "1", cursor: "pointer", textAlign: "center" }}
+        >
+          <div>Damaged</div>
+          <div style={{ fontSize: "20px", fontWeight: "bold" }}>{stats.damaged}</div>
+        </div>
       </div>
 
       {showForm && (
@@ -89,7 +133,7 @@ function Inventory() {
         </div>
       )}
 
-<div className="inventory-controls" style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
+      <div className="inventory-controls" style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
         <input
           type="text"
           placeholder="Search Product..."
@@ -105,12 +149,12 @@ function Inventory() {
         >
           <option value="All">All Statuses ▼</option>
           <option value="Available">Available</option>
+          <option value="Low Stock">Low Stock</option>
           <option value="Expired">Expired</option>
           <option value="Damaged">Damaged</option>
           <option value="Reserved">Reserved</option>
         </select>
       </div>
-
 
       <table className="inventory-table">
         <thead>
