@@ -1,90 +1,87 @@
 import { NavLink } from "react-router-dom";
 
 function Sidebar({ sidebarOpen }) {
-
-  const linkStyle = ({ isActive }) => ({
-    textDecoration: "none",
-    padding: "8px",
-    borderRadius: "5px",
-    display: "block",
-    backgroundColor: isActive ? "#e5e7eb" : "transparent",
-    fontWeight: isActive ? "bold" : "normal"
-  });
-
   return (
     <aside className={sidebarOpen ? "sidebar" : "sidebar collapsed"}>
-
-      {sidebarOpen && (
-        <h2>🏪 Supermarket MIS</h2>
-      )}
+      <div className="sidebar__brand">
+        <span className="sidebar__brand-icon">🏪</span>
+        {sidebarOpen && <span className="sidebar__brand-title">Supermarket MIS</span>}
+      </div>
 
       <nav>
-
-        <NavLink to="/dashboard" style={linkStyle}>
-          🏠 {sidebarOpen && "Dashboard"}
+        <NavLink to="/dashboard">
+          <span>🏠</span>
+          {sidebarOpen && <span className="sidebar__nav-label">Dashboard</span>}
         </NavLink>
 
+        {sidebarOpen && <h4>Sales</h4>}
 
-        {sidebarOpen && <h4>SALES</h4>}
-
-        <NavLink to="/sales" style={linkStyle}>
-          🛒 {sidebarOpen && "Sales POS"}
+        <NavLink to="/sales">
+          <span>🛒</span>
+          {sidebarOpen && <span className="sidebar__nav-label">Sales POS</span>}
         </NavLink>
 
-        <NavLink to="/customers" style={linkStyle}>
-          👥 {sidebarOpen && "Customers"}
+        <NavLink to="/customers">
+          <span>👥</span>
+          {sidebarOpen && <span className="sidebar__nav-label">Customers</span>}
         </NavLink>
 
+        {sidebarOpen && <h4>Inventory</h4>}
 
-        {sidebarOpen && <h4>INVENTORY</h4>}
-
-        <NavLink to="/products" style={linkStyle}>
-          📦 {sidebarOpen && "Products"}
+        <NavLink to="/products">
+          <span>📦</span>
+          {sidebarOpen && <span className="sidebar__nav-label">Products</span>}
         </NavLink>
 
-        <NavLink to="/categories" style={linkStyle}>
-          🏷️ {sidebarOpen && "Categories"}
+        <NavLink to="/categories">
+          <span>🏷️</span>
+          {sidebarOpen && <span className="sidebar__nav-label">Categories</span>}
         </NavLink>
 
-        <NavLink to="/suppliers" style={linkStyle}>
-          🚚 {sidebarOpen && "Suppliers"}
+        <NavLink to="/suppliers">
+          <span>🚚</span>
+          {sidebarOpen && <span className="sidebar__nav-label">Suppliers</span>}
         </NavLink>
 
-        <NavLink to="/purchases" style={linkStyle}>
-          📥 {sidebarOpen && "Purchases"}
+        <NavLink to="/purchases">
+          <span>📥</span>
+          {sidebarOpen && <span className="sidebar__nav-label">Purchases</span>}
         </NavLink>
 
-        <NavLink to="/inventory" style={linkStyle}>
-          📋 {sidebarOpen && "Inventory"}
+        <NavLink to="/inventory">
+          <span>📋</span>
+          {sidebarOpen && <span className="sidebar__nav-label">Inventory</span>}
         </NavLink>
 
-        <NavLink to="/stock-receiving" style={linkStyle}>
-          📥 {sidebarOpen && "Stock Receiving"}
+        <NavLink to="/stock-receiving">
+          <span>📥</span>
+          {sidebarOpen && <span className="sidebar__nav-label">Stock Receiving</span>}
         </NavLink>
 
-        {sidebarOpen && <h4>REPORTS</h4>}
+        {sidebarOpen && <h4>Reports</h4>}
 
-        <NavLink to="/reports" style={linkStyle}>
-          📊 {sidebarOpen && "Reports"}
+        <NavLink to="/reports">
+          <span>📊</span>
+          {sidebarOpen && <span className="sidebar__nav-label">Reports</span>}
         </NavLink>
 
+        {sidebarOpen && <h4>Administration</h4>}
 
-        {sidebarOpen && <h4>ADMINISTRATION</h4>}
-
-        <NavLink to="/users" style={linkStyle}>
-          👤 {sidebarOpen && "Users"}
+        <NavLink to="/users">
+          <span>👤</span>
+          {sidebarOpen && <span className="sidebar__nav-label">Users</span>}
         </NavLink>
 
-        <NavLink to="/activity-logs" style={linkStyle}>
-          📜 {sidebarOpen && "Activity Logs"}
+        <NavLink to="/activity-logs">
+          <span>📜</span>
+          {sidebarOpen && <span className="sidebar__nav-label">Activity Logs</span>}
         </NavLink>
 
-        <NavLink to="/settings" style={linkStyle}>
-          ⚙️ {sidebarOpen && "Settings"}
+        <NavLink to="/settings">
+          <span>⚙️</span>
+          {sidebarOpen && <span className="sidebar__nav-label">Settings</span>}
         </NavLink>
-
       </nav>
-
     </aside>
   );
 }

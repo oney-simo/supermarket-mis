@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import '../styles/login.css';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -18,8 +19,7 @@ export default function Login() {
 
     try {
       const loggedInUser = await login(username, password);
-      
-      // Redirect based on role
+
       if (loggedInUser.role === 'cashier') {
         navigate('/sales');
       } else {
@@ -33,78 +33,46 @@ export default function Login() {
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100vh',
-      backgroundColor: '#f4f6f9',
-      fontFamily: 'Arial, sans-serif'
-    }}>
-      <div style={{
-        backgroundColor: '#fff',
-        padding: '40px',
-        borderRadius: '8px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-        width: '380px'
-      }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '24px', color: '#333' }}>
-          Supermarket MIS
-        </h2>
-
-        {error && (
-          <div style={{
-            backgroundColor: '#f8d7da',
-            color: '#721c24',
-            padding: '10px',
-            borderRadius: '4px',
-            marginBottom: '16px',
-            fontSize: '14px'
-          }}>
-            {error}
+    <div className="auth-screen">
+      <div className="auth-card">
+        <div className="auth-card__brand">
+          <span className="auth-card__icon">🏪</span>
+          <div>
+            <h2>Supermarket MIS</h2>
+            <p>Streamlined operations in a modern workspace</p>
           </div>
-        )}
+        </div>
+
+        {error && <div className="auth-error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>Username</label>
+          <div className="auth-field">
+            <label htmlFor="username">Username</label>
             <input
+              id="username"
+              className="auth-input"
               type="text"
               required
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter username"
-              style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
             />
           </div>
 
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold' }}>Password</label>
+          <div className="auth-field">
+            <label htmlFor="password">Password</label>
             <input
+              id="password"
+              className="auth-input"
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter password"
-              style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={submitting}
-            style={{
-              width: '100%',
-              padding: '12px',
-              backgroundColor: '#007bff',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              fontWeight: 'bold',
-              fontSize: '16px',
-              cursor: submitting ? 'not-allowed' : 'pointer'
-            }}
-          >
+          <button className="auth-button" type="submit" disabled={submitting}>
             {submitting ? 'Logging in...' : 'Sign In'}
           </button>
         </form>

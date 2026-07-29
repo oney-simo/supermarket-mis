@@ -1,25 +1,21 @@
 function Navbar({ setSidebarOpen, sidebarOpen }) {
-
   return (
     <header className="navbar">
-
-      <div>
-        <button 
+      <div className="navbar__left">
+        <button
+          className="navbar__toggle"
           onClick={() => setSidebarOpen(!sidebarOpen)}
+          aria-label="Toggle sidebar"
         >
           ☰
         </button>
 
-        <h2>
-          🏪 Supermarket MIS
-        </h2>
+        <h2 className="navbar__title">🏪 Supermarket MIS</h2>
       </div>
 
-
-      <div>
-        🔔 Admin
+      <div className="navbar__right">
+        <span className="status-pill">🔔 Admin</span>
       </div>
-
     </header>
   );
 }

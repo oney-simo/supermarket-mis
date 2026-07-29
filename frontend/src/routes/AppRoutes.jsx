@@ -37,7 +37,7 @@ function AppRoutes() {
         
         {/* 1. Accessible by ALL authenticated users (Cashier, Manager & Admin) */}
         <Route element={<ProtectedRoute allowedRoles={['cashier', 'manager', 'admin']} />}>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/sales" element={<Sales />} />
           <Route path="/customers" element={<Customers />} />
