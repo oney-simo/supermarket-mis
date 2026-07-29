@@ -20,7 +20,7 @@
 | Order | Module         | Priority  |test|
 | ----- | -------------- | --------- |    
 | ✅     | Product        | Done      |done
-| 2     | Category       | High      |
+| 2     | Category       | High      |done
 | 3     | Supplier       | High      |
 | 4     | Authentication | High      |
 | 5     | Inventory      | High      |done

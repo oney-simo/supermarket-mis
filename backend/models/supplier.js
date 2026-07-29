@@ -15,11 +15,21 @@ const supplierSchema = new mongoose.Schema(
       trim: true
     },
 
+    description: {
+      type: String,
+      trim: true // What the supplier supplies (e.g., Dairy products, Beverages)
+    },
+
     email: {
       type: String,
       trim: true,
       lowercase: true
     },
+    contactPerson: {
+      type: String,
+      trim: true // Who the supplier sends (e.g., Dairy products, Beverages)
+    },
+
 
     address: {
       type: String,
