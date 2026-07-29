@@ -9,11 +9,29 @@ function Inventory() {
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+
+  const filteredInventory = inventory.filter((item) => {
+    // Adjust properties based on your backend response structure
+    const productName = item.product?.name || "";
+    const sku = item.product?.sku || "";
+    
+    const matchesSearch = 
+      productName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.batchNumber?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+    const matchesStatus = statusFilter === "All" || item.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
 
  const handleFormSuccess = () => {
     setShowForm(false); // Close the form
     loadInventoryData(); // Call your existing data loading function to refresh the table
   };
+
 
   const loadInventoryData = async () => {
     try {
@@ -71,6 +89,29 @@ function Inventory() {
         </div>
       )}
 
+<div className="inventory-controls" style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
+        <input
+          type="text"
+          placeholder="Search Product..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ padding: "8px", flex: "1" }}
+        />
+
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          style={{ padding: "8px" }}
+        >
+          <option value="All">All Statuses ▼</option>
+          <option value="Available">Available</option>
+          <option value="Expired">Expired</option>
+          <option value="Damaged">Damaged</option>
+          <option value="Reserved">Reserved</option>
+        </select>
+      </div>
+
+
       <table className="inventory-table">
         <thead>
           <tr>
@@ -86,7 +127,7 @@ function Inventory() {
           </tr>
         </thead>
         <tbody>
-          {inventory.map((item) => (
+          {filteredInventory.map((item) => (
             <tr key={item._id}>
               <td>{item.product?.name}</td>
               <td>{item.product?.sku}</td>

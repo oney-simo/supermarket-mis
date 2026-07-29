@@ -25,8 +25,53 @@
 
 
 
+
 .inventory-table th {
 
     text-align:left;
 
+}
+
+.inventory-form-container {
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid #ccc;
+}
+
+.inventory-form-container h2 {
+  margin-bottom: 15px;
+}
+
+.inventory-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 500px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group select {
+  padding: 8px;
+  font-size: 14px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.form-actions button {
+  padding: 8px 16px;
+  cursor: pointer;
 }
