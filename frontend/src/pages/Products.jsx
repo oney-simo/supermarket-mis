@@ -6,12 +6,15 @@ import ProductTable from "../components/products/ProductTable";
 import AddProductForm from "../components/products/AddProductForm";
 
 import "../styles/products.css";
+import LoadingSpinner from "../components/common/LoadingSpinner";
+import { getProducts } from "../api/productApi";
 
 function Products() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [productToEdit, setProductToEdit] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const handleEditClick = (product) => {
     setProductToEdit(product);
@@ -19,14 +22,19 @@ function Products() {
   };
 
   // Fetch products from backend
-  const fetchProducts = async () => {
+ const fetchProducts = async () => {
     try {
-      const response = await api.get("/products");
-      setProducts(response.data);
+        setLoading(true);
+
+        const response = await getProducts();
+
+        setProducts(response.data);
     } catch (error) {
-      console.log(error);
+        console.error(error);
+    } finally {
+        setLoading(false);
     }
-  };
+};
 
   // Load products when page opens
   useEffect(() => {
@@ -77,12 +85,15 @@ function Products() {
           }}
         />
       )}
-     <ProductTable
+    {loading ? (
+    <LoadingSpinner text="Loading products..." />
+) : (
+    <ProductTable
         products={filteredProducts}
         onDelete={handleDeleteProduct}
         onEdit={handleEditClick}
-      />
-
+    />
+)}
     </div>
   );
 }

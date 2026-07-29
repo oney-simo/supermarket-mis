@@ -7,9 +7,12 @@ exports.getInventory = async (req, res) => {
 
     try {
 
-        const inventory = await Inventory.find()
-        .populate('product')
-        .sort({ createdAt: -1 });
+       const inventory = await Inventory.find()
+.populate(
+  'product',
+  'name sku unit buyingPrice sellingPrice reorderLevel'
+)
+.sort({ createdAt: -1 });
 
 
         res.status(200).json(inventory);
@@ -92,6 +95,66 @@ exports.getExpiringProducts = async (req,res)=>{
             error:error.message
         });
 
+    }
+
+};
+
+
+// CREATE INVENTORY BATCH
+exports.createInventory = async (req, res) => {
+    try {
+        const {
+            product,
+            batchNumber,
+            quantity,
+            manufacturingDate,
+            expiryDate,
+            receivedDate,
+            status
+        } = req.body;
+
+        if (!product || quantity === undefined || quantity === null) {
+            return res.status(400).json({ message: 'Product and quantity are required' });
+        }
+
+        const inventory = new Inventory({
+            product,
+            batchNumber,
+            quantity,
+            manufacturingDate,
+            expiryDate,
+            receivedDate,
+            status
+        });
+
+        const saved = await inventory.save();
+
+        // populate product field for response
+        await saved.populate('product');
+
+        // log activity (optional if auth present)
+        try {
+            await logActivity({
+                req,
+                user: req.user ?? null,
+                action: 'create',
+                module: 'inventory',
+                description: `Created inventory batch ${batchNumber || ''}`,
+                referenceId: saved._id,
+                referenceModel: 'inventory',
+                metadata: { quantity }
+            });
+        } catch (e) {
+            // swallow logging errors
+            console.warn('Activity log failed:', e?.message || e);
+        }
+
+        res.status(201).json(saved);
+    } catch (error) {
+        res.status(500).json({
+            message: 'Server error',
+            error: error.message
+        });
     }
 
 };

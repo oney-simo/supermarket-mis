@@ -1,0 +1,32 @@
+.inventory-page {
+
+    padding:20px;
+
+}
+
+
+.inventory-table {
+
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+
+}
+
+
+
+.inventory-table th,
+.inventory-table td {
+
+    padding:12px;
+    border-bottom:1px solid #ddd;
+
+}
+
+
+
+.inventory-table th {
+
+    text-align:left;
+
+}

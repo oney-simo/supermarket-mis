@@ -9,6 +9,7 @@ import "../styles/dashboard.css";
 function Dashboard() {
 
   const [dashboardData, setDashboardData] = useState(null);
+  const [error, setError] = useState(null);
 
 
   useEffect(() => {
@@ -21,11 +22,12 @@ function Dashboard() {
 
         setDashboardData(response.data);
 
-      } catch (error) {
+      }catch (error) {
 
-        console.log(error);
+  console.log(error);
+  setError("Failed to load dashboard data");
 
-      }
+}
 
     };
 
@@ -36,14 +38,22 @@ function Dashboard() {
 
 
 
-  if (!dashboardData) {
-    return (
-      <h2>
-        Loading dashboard...
-      </h2>
-    );
-  }
+  if (error) {
+  return (
+    <h2>
+      {error}
+    </h2>
+  );
+}
 
+
+if (!dashboardData) {
+  return (
+    <h2>
+      Loading dashboard...
+    </h2>
+  );
+}
 
 
   return (
@@ -92,7 +102,7 @@ function Dashboard() {
 
         <StatCard
           title="Today's Revenue"
-          value={dashboardData.todayRevenue}
+          value={`TZS${dashboardData.todayRevenue.toFixed(2)}`}
           icon="💰"
         />
 
