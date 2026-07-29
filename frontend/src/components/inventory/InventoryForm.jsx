@@ -169,11 +169,11 @@ function InventoryForm({ itemToEdit, onSuccess, onCancel }) {
         </div>
 
         <div className="form-actions">
-          <button type="submit" disabled={submitting}>
+          <button type="submit" disabled={submitting} className="btn btn--green">
             {submitting ? "Saving..." : itemToEdit ? "Update Batch" : "Save Batch"}
           </button>
           {onCancel && (
-            <button type="button" onClick={onCancel} className="btn-cancel">
+            <button type="button" onClick={onCancel} className="btn btn--red">
               Cancel
             </button>
           )}

@@ -18,6 +18,7 @@ const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 const customerRoutes = require('./routes/customerRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
+const seedStockReceivingDemoData = require('./services/seedStockReceivingDemoData');
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
@@ -27,7 +28,13 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-connectDB();
+connectDB().then(() => {
+  if (process.env.NODE_ENV !== 'test') {
+    seedStockReceivingDemoData().catch((error) => {
+      console.warn('Demo data seeding skipped:', error.message);
+    });
+  }
+});
 
 app.get('/health', (req, res) => {
   res.json({

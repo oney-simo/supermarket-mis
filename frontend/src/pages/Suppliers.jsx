@@ -109,10 +109,7 @@ export default function Suppliers() {
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h2>Supplier Management</h2>
-        <button
-          onClick={() => handleOpenModal()}
-          style={{ padding: '10px 15px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-        >
+        <button className="btn btn--blue" onClick={() => handleOpenModal()}>
           + Add Supplier
         </button>
       </div>
@@ -160,16 +157,10 @@ export default function Suppliers() {
                   </td>
                   <td style={{ padding: '12px' }}>{sup.address || '—'}</td>
                   <td style={{ padding: '12px', textAlign: 'center' }}>
-                    <button
-                      onClick={() => handleOpenModal(sup)}
-                      style={{ marginRight: '8px', padding: '6px 10px', backgroundColor: '#ffc107', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
-                    >
+                    <button className="btn btn--blue" onClick={() => handleOpenModal(sup)} style={{ marginRight: '8px' }}>
                       Edit
                     </button>
-                    <button
-                      onClick={() => handleDelete(sup._id)}
-                      style={{ padding: '6px 10px', backgroundColor: '#dc3545', color: '#fff', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
-                    >
+                    <button className="btn btn--red" onClick={() => handleDelete(sup._id)}>
                       Delete
                     </button>
                   </td>
@@ -252,13 +243,13 @@ export default function Suppliers() {
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  style={{ padding: '8px 15px', backgroundColor: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                  className="btn btn--red"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  style={{ padding: '8px 15px', backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                  className="btn btn--green"
                 >
                   {editingSupplier ? 'Update Supplier' : 'Save Supplier'}
                 </button>

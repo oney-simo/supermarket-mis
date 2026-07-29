@@ -9,6 +9,7 @@ export default function StockReceiving() {
   const [records, setRecords] = useState([]);
   const [purchases, setPurchases] = useState([]);
   const [products, setProducts] = useState([]);
+  const [purchaseItems, setPurchaseItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingOptions, setLoadingOptions] = useState(true);
   const [error, setError] = useState(null);
@@ -69,6 +70,38 @@ export default function StockReceiving() {
     fetchOptions();
   };
 
+  const handlePurchaseChange = async (purchaseId) => {
+    const nextPurchase = purchaseId || '';
+
+    setFormData((prev) => ({ ...prev, purchase: nextPurchase, product: '' }));
+    setPurchaseItems([]);
+
+    if (!nextPurchase) {
+      return;
+    }
+
+    try {
+      const response = await api.get(`/purchases/${nextPurchase}`);
+      const payload = response?.data || {};
+      const items = Array.isArray(payload.items)
+        ? payload.items
+        : Array.isArray(payload.purchase?.items)
+          ? payload.purchase.items
+          : [];
+      setPurchaseItems(items);
+
+      if (items.length === 1) {
+        const productId = items[0]?.product?._id || items[0]?.product || '';
+        setFormData((prev) => ({ ...prev, purchase: nextPurchase, product: productId }));
+      } else {
+        setFormData((prev) => ({ ...prev, purchase: nextPurchase, product: '' }));
+      }
+    } catch (err) {
+      console.error('Failed to load purchase items:', err);
+      setPurchaseItems([]);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -84,6 +117,7 @@ export default function StockReceiving() {
         expiryDate: '',
         condition: 'Good',
       });
+      setPurchaseItems([]);
     } catch (err) {
       alert(err.response?.data?.message || 'Error processing stock receipt');
     }
@@ -169,7 +203,7 @@ export default function StockReceiving() {
             <select
               required
               value={formData.purchase}
-              onChange={(e) => setFormData({ ...formData, purchase: e.target.value })}
+              onChange={(e) => handlePurchaseChange(e.target.value)}
               disabled={loadingOptions}
             >
               <option value="">-- Select Purchase --</option>
@@ -194,15 +228,31 @@ export default function StockReceiving() {
               required
               value={formData.product}
               onChange={(e) => setFormData({ ...formData, product: e.target.value })}
-              disabled={loadingOptions}
+              disabled={loadingOptions || !formData.purchase}
             >
-              <option value="">-- Select Product --</option>
-              {products.map((product) => (
-                <option key={product._id} value={product._id}>
-                  {product.name} ({product.sku})
-                </option>
-              ))}
+              <option value="">{formData.purchase ? '-- Select Product from this purchase --' : '-- Select Purchase first --'}</option>
+              {purchaseItems.length > 0
+                ? purchaseItems.map((item) => {
+                    const productId = item.product?._id || item.product;
+                    const productName = item.product?.name || item.productName || 'Unknown product';
+                    const sku = item.product?.sku || '';
+                    return (
+                      <option key={productId} value={productId}>
+                        {productName}{sku ? ` (${sku})` : ''}
+                      </option>
+                    );
+                  })
+                : products.map((product) => (
+                    <option key={product._id} value={product._id}>
+                      {product.name} ({product.sku})
+                    </option>
+                  ))}
             </select>
+            {formData.purchase && purchaseItems.length > 0 && (
+              <small style={{ display: 'block', marginTop: '6px', color: '#6b7280' }}>
+                This purchase includes the products above. Select the item you want to receive.
+              </small>
+            )}
           </div>
 
           <div>

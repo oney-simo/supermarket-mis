@@ -7,6 +7,16 @@ export default function Settings() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
 
+  const applyTheme = (themeValue) => {
+    const resolvedTheme = themeValue === 'system'
+      ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : (themeValue || 'light');
+
+    document.documentElement.setAttribute('data-theme', resolvedTheme);
+    document.documentElement.style.colorScheme = resolvedTheme;
+    window.localStorage.setItem('app-theme', resolvedTheme);
+  };
+
   // Form State corresponding to Mongoose Settings Schema
   const [formData, setFormData] = useState({
     // 1. Business Info
@@ -21,7 +31,7 @@ export default function Settings() {
     receiptFooter: '',
 
     // 3. Tax & Currency
-    currencySymbol: '$',
+    currencySymbol: 'TZS',
     taxRate: 0,
 
     // 4. Inventory Settings
@@ -51,8 +61,19 @@ export default function Settings() {
   });
 
   useEffect(() => {
+    const savedTheme = window.localStorage.getItem('app-theme');
+    if (savedTheme) {
+      applyTheme(savedTheme);
+    }
+
     fetchSettings();
   }, []);
+
+  useEffect(() => {
+    if (formData.theme) {
+      applyTheme(formData.theme);
+    }
+  }, [formData.theme]);
 
   const fetchSettings = async () => {
     try {
@@ -85,7 +106,9 @@ export default function Settings() {
       const res = await updateSettings(formData);
       setMessage({ type: 'success', text: res.message || 'Settings updated successfully!' });
       if (res.settings) {
-        setFormData((prev) => ({ ...prev, ...res.settings }));
+        const nextTheme = res.settings.theme || formData.theme;
+        setFormData((prev) => ({ ...prev, ...res.settings, theme: nextTheme }));
+        applyTheme(nextTheme);
       }
     } catch (err) {
       setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to update settings.' });

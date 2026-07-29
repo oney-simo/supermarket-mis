@@ -106,7 +106,7 @@ function Categories() {
     <div className="categories-page" style={{ padding: "20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
         <h2>Category Management</h2>
-        <button onClick={handleOpenAdd} style={{ padding: "8px 15px", cursor: "pointer" }}>
+        <button className="btn btn--blue" onClick={handleOpenAdd}>
           + Add Category
         </button>
       </div>
@@ -137,10 +137,10 @@ function Categories() {
                 style={{ width: "100%", padding: "8px" }}
               />
             </div>
-            <button type="submit" disabled={submitting} style={{ marginRight: "10px", padding: "6px 12px", cursor: "pointer" }}>
+            <button type="submit" disabled={submitting} className="btn btn--green" style={{ marginRight: "10px" }}>
               {submitting ? "Saving..." : "Save"}
             </button>
-            <button type="button" onClick={() => setShowForm(false)} style={{ padding: "6px 12px", cursor: "pointer" }}>
+            <button type="button" onClick={() => setShowForm(false)} className="btn btn--red">
               Cancel
             </button>
           </form>
@@ -170,9 +170,9 @@ function Categories() {
                   {cat.productCount || 0}
                 </td>
                 <td style={{ padding: "10px", textAlign: "center" }}>
-                  <button onClick={() => handleViewProducts(cat)} style={{ marginRight: "5px", cursor: "pointer" }}>👁️ View</button>
-                  <button onClick={() => handleOpenEdit(cat)} style={{ marginRight: "5px", cursor: "pointer" }}>✏️ Edit</button>
-                  <button onClick={() => handleDelete(cat._id)} style={{ cursor: "pointer", color: "red" }}>🗑 Delete</button>
+                  <button className="btn btn--blue" onClick={() => handleViewProducts(cat)} style={{ marginRight: "5px" }}>View</button>
+                  <button className="btn btn--green" onClick={() => handleOpenEdit(cat)} style={{ marginRight: "5px" }}>Edit</button>
+                  <button className="btn btn--red" onClick={() => handleDelete(cat._id)}>Delete</button>
                 </td>
               </tr>
             ))
@@ -201,7 +201,7 @@ function Categories() {
   ))}
 </ul>
             )}
-            <button onClick={() => setViewingCategory(null)} style={{ padding: "6px 12px", cursor: "pointer" }}>
+            <button className="btn btn--blue" onClick={() => setViewingCategory(null)}>
               Close
             </button>
           </div>

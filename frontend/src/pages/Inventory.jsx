@@ -92,7 +92,7 @@ function Inventory() {
         <p>Monitor stock levels, batches and expiry dates.</p>
       </div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-        <button onClick={() => setShowForm(!showForm)}>
+        <button className="btn btn--blue" onClick={() => setShowForm(!showForm)}>
           {showForm ? "Cancel" : "+ Add Stock Batch"}
         </button>
       </div>
@@ -141,15 +141,6 @@ function Inventory() {
               setShowForm(false);
               setEditingItem(null);
             }} 
-          />
-        </div>
-      )}
-
-      {showForm && (
-        <div style={{ marginBottom: "20px" }}>
-          <InventoryForm 
-            onSuccess={handleFormSuccess} 
-            onCancel={() => setShowForm(false)} 
           />
         </div>
       )}
@@ -209,10 +200,10 @@ function Inventory() {
               <td>{getStockAlert(item)}</td>
               <td>
                 <button 
+                  className="btn btn--green"
                   onClick={() => handleEdit(item)} 
-                  style={{ cursor: "pointer" }}
                 >
-                  ✏️ Edit
+                  Edit
                 </button>
               </td>
             </tr>

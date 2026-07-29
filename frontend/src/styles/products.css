@@ -74,28 +74,41 @@
 }
 
 .action-btn {
-  padding: 7px 10px;
+  padding: 6px 10px;
   margin-right: 6px;
-  border-radius: 999px;
+  border-radius: 6px;
   border: 0;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 600;
+  min-height: 30px;
 }
 
 .action-btn--view {
-  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  background: #2563eb;
   color: #fff;
+}
+
+.action-btn--view:hover {
+  background: #1d4ed8;
 }
 
 .action-btn--edit {
-  background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+  background: #16a34a;
   color: #fff;
 }
 
+.action-btn--edit:hover {
+  background: #15803d;
+}
+
 .action-btn--delete {
-  background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%);
+  background: #dc2626;
   color: #fff;
+}
+
+.action-btn--delete:hover {
+  background: #b91c1c;
 }
 
 .product-form {

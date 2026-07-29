@@ -16,8 +16,8 @@ export default function Reports() {
   const [dailyChart, setDailyChart] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtering, setFiltering] = useState(false);
+  const [activeChartPage, setActiveChartPage] = useState(0);
 
-  // Date Range Filters
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
@@ -46,7 +46,6 @@ export default function Reports() {
     }
   };
 
-  // Fixed Filter Handler
   const handleFilterSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -61,45 +60,78 @@ export default function Reports() {
     }
   };
 
+  const chartPages = [
+    { title: 'Daily Revenue Trend', content: <DailySalesChart data={dailyChart} /> },
+    { title: 'Top Selling Products', content: <TopProductsChart products={topProducts} /> }
+  ];
+
+  const changeChartPage = (direction) => {
+    setActiveChartPage((prev) => {
+      if (direction === 'next') {
+        return prev === chartPages.length - 1 ? 0 : prev + 1;
+      }
+      return prev === 0 ? chartPages.length - 1 : prev - 1;
+    });
+  };
+
   if (loading) return <div style={{ padding: '20px' }}>Loading analytics dashboard...</div>;
 
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+      <style>{`
+        @keyframes reports-page-enter {
+          from { opacity: 0; transform: translateX(16px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+      `}</style>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h2>Analytics & Reports</h2>
 
-        {/* Date Filter Form */}
         <form onSubmit={handleFilterSubmit} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            style={{ padding: '6px', borderRadius: '4px', border: '1px solid #ccc' }}
+            style={{ padding: '6px', borderRadius: '6px', border: '1px solid #ccc' }}
           />
           <span>to</span>
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            style={{ padding: '6px', borderRadius: '4px', border: '1px solid #ccc' }}
+            style={{ padding: '6px', borderRadius: '6px', border: '1px solid #ccc' }}
           />
           <button
             type="submit"
             disabled={filtering}
-            style={{ padding: '6px 12px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+            className="btn btn--blue"
           >
             {filtering ? 'Filtering...' : 'Filter Summary'}
           </button>
         </form>
       </div>
 
-      {/* KPI Cards */}
       <SummaryCards summary={summary} valuation={valuation} />
 
-      {/* Charts Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-        <DailySalesChart data={dailyChart} />
-        <TopProductsChart products={topProducts} />
+      <div style={{ background: '#fff', padding: '20px', borderRadius: '16px', boxShadow: '0 14px 34px rgba(15, 23, 42, 0.08)', border: '1px solid #e5e7eb' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '12px' }}>
+          <div>
+            <h3 style={{ margin: 0 }}>{chartPages[activeChartPage].title}</h3>
+            <p style={{ marginTop: '4px', color: '#64748b', fontSize: '13px' }}>Page {activeChartPage + 1} of {chartPages.length}</p>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button type="button" className="btn btn--ghost" onClick={() => changeChartPage('prev')}>
+              Previous
+            </button>
+            <button type="button" className="btn btn--blue" onClick={() => changeChartPage('next')}>
+              Next
+            </button>
+          </div>
+        </div>
+
+        <div key={activeChartPage} style={{ animation: 'reports-page-enter 0.35s ease' }}>
+          {chartPages[activeChartPage].content}
+        </div>
       </div>
     </div>
   );
