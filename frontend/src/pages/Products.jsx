@@ -26,9 +26,9 @@ function Products() {
     try {
         setLoading(true);
 
-        const response = await getProducts();
+        const productsData = await getProducts();
 
-        setProducts(response.data);
+        setProducts(Array.isArray(productsData) ? productsData : []);
     } catch (error) {
         console.error(error);
     } finally {

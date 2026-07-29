@@ -37,8 +37,8 @@ function InventoryForm({ itemToEdit, onSuccess, onCancel }) {
   useEffect(() => {
     const fetchProductsList = async () => {
       try {
-        const response = await getProducts();
-        setProducts(response.data);
+        const productsData = await getProducts();
+        setProducts(Array.isArray(productsData) ? productsData : []);
       } catch (err) {
         console.error("Failed to fetch products:", err);
         setError("Failed to load products for selection.");

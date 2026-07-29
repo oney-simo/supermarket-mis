@@ -14,6 +14,7 @@ import Reports from "../pages/Reports";
 import Users from "../pages/Users";
 import ActivityLogs from "../pages/ActivityLogs";
 import Settings from "../pages/Settings";
+import StockReceiving from "../pages/StockReceiving";
 
 
 function AppRoutes() {
@@ -69,6 +70,15 @@ function AppRoutes() {
         element={
           <MainLayout>
             <Inventory />
+          </MainLayout>
+        }
+      />
+
+      <Route
+        path="/stock-receiving"
+        element={
+          <MainLayout>
+            <StockReceiving />
           </MainLayout>
         }
       />

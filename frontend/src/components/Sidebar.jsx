@@ -58,6 +58,9 @@ function Sidebar({ sidebarOpen }) {
           📋 {sidebarOpen && "Inventory"}
         </NavLink>
 
+        <NavLink to="/stock-receiving" style={linkStyle}>
+          📥 {sidebarOpen && "Stock Receiving"}
+        </NavLink>
 
         {sidebarOpen && <h4>REPORTS</h4>}
 
