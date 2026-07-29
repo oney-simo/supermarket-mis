@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+
 :root {
   --maroon-900: #4a000a;
   --maroon-800: #6d0b16;
@@ -9,7 +12,7 @@
   --border: #e2e8f0;
   --shadow-sm: 0 10px 24px rgba(15, 23, 42, 0.08);
   --shadow-md: 0 16px 32px rgba(15, 23, 42, 0.12);
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: var(--text-strong);
@@ -57,10 +60,82 @@ input {
 
 button {
   transition: all 200ms ease;
+  font-family: inherit;
 }
 
 a {
   transition: all 200ms ease;
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+}
+
+button:not(.icon-button):not(.navbar__toggle):not(.sidebar__logout) {
+  border: 0;
+}
+
+.btn--green {
+  background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+  color: #fff;
+}
+
+.btn--blue {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  color: #fff;
+}
+
+.btn--red {
+  background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%);
+  color: #fff;
+}
+
+.btn--ghost {
+  background: var(--surface);
+  color: var(--text-strong);
+  box-shadow: none;
+  border: 1px solid var(--border);
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  background: var(--maroon-100);
 }
 
 .text-left { text-align: left; }
@@ -87,4 +162,54 @@ a {
 .table-cell--center,
 .centered-tag {
   text-align: center;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 2000;
+}
+
+.modal-card {
+  width: min(560px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  background: var(--surface-strong);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.modal-card__header,
+.modal-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-card__footer {
+  border-top: 1px solid var(--border);
+  border-bottom: 0;
+}
+
+.modal-card__body {
+  padding: 20px 24px;
+}
+
+.modal-card h3 {
+  margin: 0 0 4px;
+  color: var(--maroon-900);
+}
+
+.modal-card p {
+  margin: 0;
+  color: var(--text-muted);
 }

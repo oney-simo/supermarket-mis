@@ -1,0 +1,111 @@
+.stock-receiving-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.stock-receiving-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 22px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(74, 0, 10, 0.06), rgba(255, 255, 255, 0.95));
+  border: 1px solid var(--border);
+}
+
+.stock-receiving-title {
+  color: var(--maroon-900);
+}
+
+.stock-receiving-subtitle {
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.stock-receiving-table-wrap {
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.stock-receiving-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stock-receiving-table th {
+  text-align: left;
+  padding: 14px 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  background: #fbfcff;
+}
+
+.stock-receiving-table td {
+  padding: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.stock-receiving-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.stock-receiving-badge--good {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.stock-receiving-badge--damaged {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.stock-receiving-form {
+  display: grid;
+  gap: 12px;
+}
+
+.stock-receiving-form label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.stock-receiving-form input,
+.stock-receiving-form select,
+.stock-receiving-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-strong);
+}
+
+.stock-receiving-form input:focus,
+.stock-receiving-form select:focus,
+.stock-receiving-form textarea:focus {
+  outline: none;
+  border-color: var(--maroon-900);
+  box-shadow: 0 0 0 3px rgba(74, 0, 10, 0.12);
+}
+
+.stock-receiving-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}

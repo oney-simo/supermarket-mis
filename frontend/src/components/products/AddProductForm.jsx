@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
+import Modal from "../common/Modal";
 import { buildProductPayload, getCategoryId, getProductId, normalizeCategoriesResponse } from "./productFormUtils";
 
-function AddProductForm({ productToEdit, onProductSaved }) {
+function AddProductForm({ productToEdit, onProductSaved, onCancel }) {
   const [formData, setFormData] = useState({
     name: "",
     sku: "",
@@ -15,6 +16,7 @@ function AddProductForm({ productToEdit, onProductSaved }) {
     description: ""
   });
   const [categories, setCategories] = useState([]);
+  const [notice, setNotice] = useState(null);
 
   // Populate form if we are editing an existing product
   useEffect(() => {
@@ -52,27 +54,31 @@ function AddProductForm({ productToEdit, onProductSaved }) {
     });
   };
 
+  const showNotice = (title, message, onConfirm) => {
+    setNotice({ title, message, onConfirm });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = buildProductPayload(formData);
 
     if (!formData.name.trim()) {
-      alert("Please enter a product name.");
+      showNotice("Validation needed", "Please enter a product name.");
       return;
     }
 
     if (!formData.sku.trim()) {
-      alert("Please enter a SKU.");
+      showNotice("Validation needed", "Please enter a SKU.");
       return;
     }
 
     if (!payload.category) {
-      alert("Please select a category before saving the product.");
+      showNotice("Validation needed", "Please select a category before saving the product.");
       return;
     }
 
     if (!formData.buyingPrice || !formData.sellingPrice) {
-      alert("Please enter both buying and selling prices.");
+      showNotice("Validation needed", "Please enter both buying and selling prices.");
       return;
     }
 
@@ -81,29 +87,26 @@ function AddProductForm({ productToEdit, onProductSaved }) {
         const productId = getProductId(productToEdit);
 
         if (!productId) {
-          alert("Unable to update the product because its ID is missing.");
+          showNotice("Update failed", "Unable to update the product because its ID is missing.");
           return;
         }
 
-        // Update existing product
         await api.put(`/products/${productId}`, payload);
-        alert("Product updated successfully");
+        showNotice("Product updated", "The product was updated successfully.", () => onProductSaved?.());
       } else {
-        // Create new product
         await api.post("/products", payload);
-        alert("Product added successfully");
+        showNotice("Product added", "The product was added successfully.", () => onProductSaved?.());
       }
-
-      onProductSaved?.();
     } catch (error) {
       console.log("FULL ERROR:", error);
-      alert("Operation failed. Check the browser console.");
+      showNotice("Operation failed", "The product could not be saved. Please try again.");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="product-form">
-      <h2>{productToEdit ? "Edit Product" : "Add New Product"}</h2>
+    <>
+      <form onSubmit={handleSubmit} className="product-form">
+        <h2>{productToEdit ? "Edit Product" : "Add New Product"}</h2>
 
       <input
         name="name"
@@ -182,10 +185,41 @@ function AddProductForm({ productToEdit, onProductSaved }) {
         onChange={handleChange}
       />
 
-      <button type="submit">
-        {productToEdit ? "Update Product" : "Save Product"}
-      </button>
-    </form>
+        <div className="product-form__actions">
+          <button type="button" className="btn btn--blue" onClick={onCancel}>
+            Back
+          </button>
+          <button type="button" className="btn btn--red" onClick={onCancel}>
+            Cancel
+          </button>
+          <button type="submit" className="btn btn--green">
+            {productToEdit ? "Update Product" : "Save Product"}
+          </button>
+        </div>
+      </form>
+
+      <Modal
+        isOpen={Boolean(notice)}
+        title={notice?.title}
+        subtitle={notice?.message}
+        onClose={() => {
+          notice?.onConfirm?.();
+          setNotice(null);
+        }}
+        footer={
+          <button
+            className="btn btn--blue"
+            type="button"
+            onClick={() => {
+              notice?.onConfirm?.();
+              setNotice(null);
+            }}
+          >
+            Continue
+          </button>
+        }
+      />
+    </>
   );
 }
 

@@ -8,13 +8,42 @@
 }
 
 .auth-card {
+  position: relative;
   width: min(420px, 100%);
   padding: 32px;
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.96);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 252, 0.72) 100%);
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(18px);
+  overflow: hidden;
+}
+
+.auth-card::before,
+.auth-card::after {
+  content: "";
+  position: absolute;
+  inset: auto;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(10px);
+}
+
+.auth-card::before {
+  width: 180px;
+  height: 180px;
+  background: rgba(74, 0, 10, 0.14);
+  top: -60px;
+  right: -40px;
+  transform: rotate(18deg);
+}
+
+.auth-card::after {
+  width: 220px;
+  height: 220px;
+  background: rgba(255, 255, 255, 0.35);
+  bottom: -90px;
+  left: -70px;
 }
 
 .auth-card__brand {
