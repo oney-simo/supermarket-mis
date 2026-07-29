@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { getProducts } from "../../api/productAPI";
 import api from "../../api/axios";
-import LoadingSpinner from "../common/LoadingSpinner"; // Adjust if common is elsewhere, e.g., "../common/LoadingSpinner" or "../../components/common/LoadingSpinner"
+import LoadingSpinner from "../common/LoadingSpinner";
 
-function InventoryForm({ onSuccess, onCancel }) {
+function InventoryForm({ itemToEdit, onSuccess, onCancel }) {
   const [products, setProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -18,6 +18,21 @@ function InventoryForm({ onSuccess, onCancel }) {
     receivedDate: "",
     status: "Available"
   });
+
+  // Pre-fill form data if an item is passed for editing
+  useEffect(() => {
+    if (itemToEdit) {
+      setFormData({
+        product: itemToEdit.product?._id || itemToEdit.product || "",
+        batchNumber: itemToEdit.batchNumber || "",
+        quantity: itemToEdit.quantity || "",
+        manufacturingDate: itemToEdit.manufacturingDate ? itemToEdit.manufacturingDate.split("T")[0] : "",
+        expiryDate: itemToEdit.expiryDate ? itemToEdit.expiryDate.split("T")[0] : "",
+        receivedDate: itemToEdit.receivedDate ? itemToEdit.receivedDate.split("T")[0] : "",
+        status: itemToEdit.status || "Available"
+      });
+    }
+  }, [itemToEdit]);
 
   useEffect(() => {
     const fetchProductsList = async () => {
@@ -46,10 +61,16 @@ function InventoryForm({ onSuccess, onCancel }) {
     setError(null);
 
     try {
-      await api.post("/inventory", formData);
+      if (itemToEdit) {
+        // Update existing item
+        await api.put(`/inventory/${itemToEdit._id}`, formData);
+      } else {
+        // Create new item
+        await api.post("/inventory", formData);
+      }
       if (onSuccess) onSuccess();
     } catch (err) {
-      console.error("Failed to create inventory batch:", err);
+      console.error("Failed to save inventory batch:", err);
       setError(err.response?.data?.message || "Failed to save inventory batch.");
     } finally {
       setSubmitting(false);
@@ -62,7 +83,7 @@ function InventoryForm({ onSuccess, onCancel }) {
 
   return (
     <div className="inventory-form-container">
-      <h2>Add Inventory Batch</h2>
+      <h2>{itemToEdit ? "Edit Inventory Batch" : "Add Inventory Batch"}</h2>
       {error && <div className="error-message" style={{ color: "red", marginBottom: "1rem" }}>{error}</div>}
 
       <form onSubmit={handleSubmit} className="inventory-form">
@@ -149,7 +170,7 @@ function InventoryForm({ onSuccess, onCancel }) {
 
         <div className="form-actions">
           <button type="submit" disabled={submitting}>
-            {submitting ? "Saving..." : "Save Batch"}
+            {submitting ? "Saving..." : itemToEdit ? "Update Batch" : "Save Batch"}
           </button>
           {onCancel && (
             <button type="button" onClick={onCancel} className="btn-cancel">

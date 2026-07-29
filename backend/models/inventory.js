@@ -47,7 +47,8 @@ const inventorySchema = new mongoose.Schema(
             'Available',
             'Expired',
             'Damaged',
-            'Removed'
+            'Removed',
+            'Reserved'
         ],
         default: 'Available'
     }

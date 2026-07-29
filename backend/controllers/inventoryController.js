@@ -158,3 +158,63 @@ exports.createInventory = async (req, res) => {
     }
 
 };
+
+
+// UPDATE INVENTORY BATCH
+exports.updateInventory = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const {
+            product,
+            batchNumber,
+            quantity,
+            manufacturingDate,
+            expiryDate,
+            receivedDate,
+            status
+        } = req.body;
+
+        const inventory = await Inventory.findById(id);
+
+        if (!inventory) {
+            return res.status(404).json({ message: 'Inventory batch not found' });
+        }
+
+        if (product !== undefined) inventory.product = product;
+        if (batchNumber !== undefined) inventory.batchNumber = batchNumber;
+        if (quantity !== undefined) inventory.quantity = quantity;
+        if (manufacturingDate !== undefined) inventory.manufacturingDate = manufacturingDate;
+        if (expiryDate !== undefined) inventory.expiryDate = expiryDate;
+        if (receivedDate !== undefined) inventory.receivedDate = receivedDate;
+        if (status !== undefined) inventory.status = status;
+
+        const updated = await inventory.save();
+        await updated.populate('product');
+
+        try {
+            await logActivity({
+                req,
+                user: req.user ?? null,
+                action: 'update',
+                module: 'inventory',
+                description: `Updated inventory batch ${updated.batchNumber || ''}`,
+                referenceId: updated._id,
+                referenceModel: 'inventory',
+                metadata: { quantity: updated.quantity }
+            });
+        } catch (e) {
+            console.warn('Activity log failed:', e?.message || e);
+        }
+
+        res.status(200).json(updated);
+    } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(400).json({ message: 'Invalid inventory id' });
+        }
+
+        res.status(500).json({
+            message: 'Server error',
+            error: error.message
+        });
+    }
+};

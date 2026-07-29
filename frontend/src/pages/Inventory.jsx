@@ -11,6 +11,14 @@ function Inventory() {
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [editingItem, setEditingItem] = useState(null);
+
+
+  // edit handleEdit function to set the item to be edited and show the form
+  const handleEdit = (item) => {
+    setEditingItem(item);
+    setShowForm(true); // Reuse your form or open the modal/form view
+  };
 
   // Defined first so it can be safely used by stats and filters
   const getStockAlert = (item) => {
@@ -127,6 +135,19 @@ function Inventory() {
       {showForm && (
         <div style={{ marginBottom: "20px" }}>
           <InventoryForm 
+            itemToEdit={editingItem}
+            onSuccess={handleFormSuccess} 
+            onCancel={() => {
+              setShowForm(false);
+              setEditingItem(null);
+            }} 
+          />
+        </div>
+      )}
+
+      {showForm && (
+        <div style={{ marginBottom: "20px" }}>
+          <InventoryForm 
             onSuccess={handleFormSuccess} 
             onCancel={() => setShowForm(false)} 
           />
@@ -170,7 +191,7 @@ function Inventory() {
             <th>Stock Alert</th>
           </tr>
         </thead>
-        <tbody>
+       <tbody>
           {filteredInventory.map((item) => (
             <tr key={item._id}>
               <td>{item.product?.name}</td>
@@ -186,6 +207,14 @@ function Inventory() {
               </td>
               <td>{item.status}</td>
               <td>{getStockAlert(item)}</td>
+              <td>
+                <button 
+                  onClick={() => handleEdit(item)} 
+                  style={{ cursor: "pointer" }}
+                >
+                  ✏️ Edit
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

@@ -5,10 +5,32 @@ const { logActivity } = require('../services/activityLogger');
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 
-// GET ALL CATEGORIES
+// GET ALL CATEGORIES (WITH PRODUCT COUNT)
 exports.getCategories = async (req, res) => {
   try {
-    const categories = await Category.find().sort({ createdAt: -1 });
+    const categories = await Category.aggregate([
+      {
+        $lookup: {
+          from: 'products', // Ensure this matches your MongoDB products collection name
+          localField: '_id',
+          foreignField: 'category',
+          as: 'products'
+        }
+      },
+      {
+        $addFields: {
+          productCount: { $size: '$products' }
+        }
+      },
+      {
+        $project: {
+          products: 0 // Exclude raw products array to keep payload lean
+        }
+      },
+      {
+        $sort: { createdAt: -1 }
+      }
+    ]);
 
     res.status(200).json(categories);
 

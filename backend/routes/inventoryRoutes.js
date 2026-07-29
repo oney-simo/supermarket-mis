@@ -4,7 +4,8 @@ const {
     getInventory,
     getInventoryByProduct,
     getExpiringProducts,
-    createInventory
+    createInventory,
+    updateInventory
 } = require('../controllers/inventoryController');
 
 
@@ -24,6 +25,9 @@ router.get('/expiry', getExpiringProducts);
 
 // Create inventory batch
 router.post('/', createInventory);
+
+// Update inventory batch
+router.put('/:id', updateInventory);
 
 
 module.exports = router;

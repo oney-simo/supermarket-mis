@@ -1,16 +1,55 @@
 const mongoose = require('mongoose');
 const Product = require('../models/Product');
+const Inventory = require('../models/inventory');
 const { logActivity } = require('../services/activityLogger');
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 exports.getProducts = async (req, res) => {
   try {
-  const products = await Product.find()
-  .populate('category')
-  .populate('supplier')
-  .sort({ createdAt: -1 });
-    res.status(200).json(products);
+    const match = {};
+
+    if (req.query.category) {
+      match.category = req.query.category;
+    }
+
+    const products = await Product.find(match)
+      .populate('category')
+      .populate('supplier')
+      .sort({ createdAt: -1 });
+
+    if (products.length === 0) {
+      return res.status(200).json([]);
+    }
+
+    const productIds = products.map((product) => product._id);
+
+    const inventoryTotals = await Inventory.aggregate([
+      {
+        $match: {
+          product: { $in: productIds },
+          status: 'Available'
+        }
+      },
+      {
+        $group: {
+          _id: '$product',
+          totalQuantity: { $sum: '$quantity' }
+        }
+      }
+    ]);
+
+    const inventoryMap = new Map(
+      inventoryTotals.map((entry) => [entry._id.toString(), entry.totalQuantity])
+    );
+
+    const productsWithStock = products.map((product) => {
+      const productObj = product.toObject({ virtuals: true });
+      productObj.stockQuantity = inventoryMap.get(product._id.toString()) ?? 0;
+      return productObj;
+    });
+
+    res.status(200).json(productsWithStock);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
