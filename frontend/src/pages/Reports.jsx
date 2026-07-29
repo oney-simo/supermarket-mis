@@ -23,6 +23,13 @@ export default function Reports() {
 
   useEffect(() => {
     loadAllReportData();
+
+    const handleSalesUpdated = () => {
+      loadAllReportData();
+    };
+
+    window.addEventListener('sales:updated', handleSalesUpdated);
+    return () => window.removeEventListener('sales:updated', handleSalesUpdated);
   }, []);
 
   const loadAllReportData = async () => {

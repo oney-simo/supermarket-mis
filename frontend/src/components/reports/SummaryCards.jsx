@@ -1,7 +1,8 @@
 import React from 'react';
 
 export default function SummaryCards({ summary, valuation }) {
-  const potentialProfit = (valuation?.totalRetailValue || 0) - (valuation?.totalAssetCost || 0);
+  const salesProfit = Number(summary?.salesProfit ?? 0);
+  const salesLoss = Number(summary?.salesLoss ?? 0);
 
   const cardStyle = {
     flex: 1,
@@ -35,9 +36,15 @@ export default function SummaryCards({ summary, valuation }) {
       </div>
 
       <div style={{ ...cardStyle, borderLeftColor: '#6f42c1' }}>
-        <span style={{ fontSize: '13px', color: '#6c757d', fontWeight: 'bold' }}>POTENTIAL MARGIN</span>
-        <h2 style={{ margin: '8px 0 0', color: '#6f42c1' }}>TZS {potentialProfit.toFixed(2)}</h2>
-        <span style={{ fontSize: '12px', color: '#6c757d' }}>Projected Stock Profit</span>
+        <span style={{ fontSize: '13px', color: '#6c757d', fontWeight: 'bold' }}>SALES PROFIT</span>
+        <h2 style={{ margin: '8px 0 0', color: '#6f42c1' }}>TZS {salesProfit.toFixed(2)}</h2>
+        <span style={{ fontSize: '12px', color: '#6c757d' }}>Actual profit from sales</span>
+      </div>
+
+      <div style={{ ...cardStyle, borderLeftColor: '#dc2626' }}>
+        <span style={{ fontSize: '13px', color: '#6c757d', fontWeight: 'bold' }}>SALES LOSS</span>
+        <h2 style={{ margin: '8px 0 0', color: '#dc2626' }}>TZS {salesLoss.toFixed(2)}</h2>
+        <span style={{ fontSize: '12px', color: '#6c757d' }}>Actual loss from sales</span>
       </div>
     </div>
   );

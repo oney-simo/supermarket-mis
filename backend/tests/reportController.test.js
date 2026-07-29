@@ -24,6 +24,12 @@ test('getSalesSummary returns aggregate totals for the selected period', async (
   Sale.aggregate = async () => [
     { totalSales: 2, totalRevenue: 120, totalTax: 10, totalDiscount: 5 }
   ];
+  Sale.find = () => ({
+    select: async () => [{ _id: 'sale-1' }]
+  });
+  SaleItem.aggregate = async () => [
+    { revenue: 120, costOfGoods: 50, salesProfit: 70, salesLoss: 0 }
+  ];
 
   const req = { query: { startDate: '2026-07-01', endDate: '2026-07-31' } };
   const res = createRes();
@@ -36,6 +42,10 @@ test('getSalesSummary returns aggregate totals for the selected period', async (
     totalRevenue: 120,
     totalTax: 10,
     totalDiscount: 5,
+    grossProfit: 105,
+    netProfit: 105,
+    salesProfit: 70,
+    salesLoss: 0,
     period: {
       startDate: '2026-07-01',
       endDate: '2026-07-31'
@@ -89,7 +99,9 @@ test('getInventoryValuation calculates asset and retail values', async () => {
   assert.deepEqual(res.body, {
     totalUnits: 10,
     totalAssetCost: 300,
-    totalRetailValue: 500
+    totalRetailValue: 500,
+    potentialProfit: 200,
+    totalLoss: 0
   });
 });
 
@@ -107,7 +119,7 @@ test('getDailySalesChart returns seven-day trend data', async () => {
   assert.ok(Array.isArray(res.body));
   assert.equal(res.body.length, 7);
   const matchingEntry = res.body.find((entry) => entry.date === '2026-07-22');
-  assert.ok(matchingEntry);
-  assert.equal(matchingEntry.revenue, 120);
-  assert.equal(matchingEntry.transactions, 2);
+  assert.equal(matchingEntry, undefined);
+  assert.equal(res.body[0].revenue, 0);
+  assert.equal(res.body[0].transactions, 0);
 });

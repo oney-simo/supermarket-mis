@@ -71,6 +71,7 @@ exports.getSalesSummary = async (req, res) => {
     const [summary] = await Sale.aggregate([
       {
         $match: {
+          paymentStatus: 'Paid',
           createdAt: {
             $gte: start,
             $lte: end
@@ -88,11 +89,89 @@ exports.getSalesSummary = async (req, res) => {
       }
     ]);
 
+    const paidSales = await Sale.find({
+      paymentStatus: 'Paid',
+      createdAt: {
+        $gte: start,
+        $lte: end
+      }
+    }).select('_id');
+
+    const saleIds = paidSales.map((sale) => sale._id);
+
+    let saleProfitData = null;
+    if (saleIds.length > 0) {
+      [saleProfitData] = await SaleItem.aggregate([
+        {
+          $match: {
+            sale: { $in: saleIds }
+          }
+        },
+        {
+          $lookup: {
+            from: 'products',
+            localField: 'product',
+            foreignField: '_id',
+            as: 'productInfo'
+          }
+        },
+        {
+          $unwind: {
+            path: '$productInfo',
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            revenue: {
+              $sum: {
+                $ifNull: ['$subtotal', { $multiply: ['$quantity', '$sellingPrice'] }]
+              }
+            },
+            costOfGoods: {
+              $sum: {
+                $multiply: [
+                  '$quantity',
+                  { $ifNull: ['$costPrice', { $ifNull: ['$productInfo.buyingPrice', 0] }] }
+                ]
+              }
+            }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            revenue: 1,
+            costOfGoods: 1,
+            salesProfit: {
+              $subtract: ['$revenue', '$costOfGoods']
+            },
+            salesLoss: {
+              $cond: {
+                if: { $gt: ['$costOfGoods', '$revenue'] },
+                then: { $subtract: ['$costOfGoods', '$revenue'] },
+                else: 0
+              }
+            }
+          }
+        }
+      ]);
+    }
+
+    const grossProfit = (summary?.totalRevenue ?? 0) - (summary?.totalTax ?? 0) - (summary?.totalDiscount ?? 0);
+    const salesProfit = saleProfitData?.salesProfit ?? 0;
+    const salesLoss = saleProfitData?.salesLoss ?? 0;
+
     res.status(200).json({
       totalSales: summary?.totalSales ?? 0,
       totalRevenue: summary?.totalRevenue ?? 0,
       totalTax: summary?.totalTax ?? 0,
       totalDiscount: summary?.totalDiscount ?? 0,
+      grossProfit,
+      netProfit: grossProfit,
+      salesProfit,
+      salesLoss,
       period: {
         startDate: formatDateValue(start),
         endDate: formatDateValue(end)
@@ -194,10 +273,15 @@ exports.getInventoryValuation = async (req, res) => {
       }
     ]);
 
+    const potentialProfit = (valuation?.totalRetailValue ?? 0) - (valuation?.totalAssetCost ?? 0);
+    const totalLoss = (valuation?.totalAssetCost ?? 0) - (valuation?.totalRetailValue ?? 0);
+
     res.status(200).json({
       totalUnits: valuation?.totalUnits ?? 0,
       totalAssetCost: valuation?.totalAssetCost ?? 0,
-      totalRetailValue: valuation?.totalRetailValue ?? 0
+      totalRetailValue: valuation?.totalRetailValue ?? 0,
+      potentialProfit: potentialProfit > 0 ? potentialProfit : 0,
+      totalLoss: totalLoss > 0 ? totalLoss : 0
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });

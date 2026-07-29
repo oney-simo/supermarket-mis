@@ -67,7 +67,10 @@ export default function POSModal({ isOpen, onClose, products, customers, onSucce
       };
 
       await createSale(payload);
-      onSuccess();
+      if (typeof onSuccess === 'function') {
+        onSuccess();
+      }
+      window.dispatchEvent(new Event('sales:updated'));
       onClose();
     } catch (err) {
       alert(err.response?.data?.message || 'Error processing transaction');

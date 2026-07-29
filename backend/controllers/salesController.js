@@ -107,6 +107,8 @@ exports.createSale = async (req, res) => {
           inventoryBatch: batch._id,
           quantity: deductQty,
           unitPrice,
+          sellingPrice: unitPrice,
+          costPrice: product.buyingPrice ?? 0,
           subtotal
         });
       }

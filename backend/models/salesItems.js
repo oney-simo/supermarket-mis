@@ -27,6 +27,16 @@ const saleItemSchema = new mongoose.Schema(
       required: [true, 'Unit price is required'],
       min: [0, 'Price cannot be negative']
     },
+    sellingPrice: {
+      type: Number,
+      required: [true, 'Selling price is required'],
+      min: [0, 'Selling price cannot be negative']
+    },
+    costPrice: {
+      type: Number,
+      required: [true, 'Cost price is required'],
+      min: [0, 'Cost price cannot be negative']
+    },
     subtotal: {
       type: Number,
       required: true

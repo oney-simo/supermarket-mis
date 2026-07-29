@@ -30,6 +30,13 @@ function Dashboard() {
     };
 
     fetchDashboard();
+
+    const handleSalesUpdated = () => {
+      fetchDashboard();
+    };
+
+    window.addEventListener('sales:updated', handleSalesUpdated);
+    return () => window.removeEventListener('sales:updated', handleSalesUpdated);
   }, []);
 
   if (error) {
