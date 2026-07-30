@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const User = require('../models/user');
+const User = require('../models/User');
 const { logActivity } = require('../services/activityLogger');
 
 const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
