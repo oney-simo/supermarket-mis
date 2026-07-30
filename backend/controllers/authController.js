@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
+const User = require('../models/User');
 const { logActivity } = require('../services/activityLogger');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supermarket-secret';
