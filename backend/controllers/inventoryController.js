@@ -10,7 +10,7 @@ exports.getInventory = async (req, res) => {
        const inventory = await Inventory.find()
 .populate(
   'product',
-  'name sku unit buyingPrice sellingPrice reorderLevel'
+  'name sku unit buyingPrice sellingPrice reorderLevel lowStockThreshold'
 )
 .sort({ createdAt: -1 });
 

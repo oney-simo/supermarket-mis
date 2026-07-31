@@ -3,8 +3,9 @@ const Supplier = require('../models/supplier');
 const Sale = require('../models/sales');
 const Purchase = require('../models/purchase');
 const Inventory = require('../models/inventory');
+const Settings = require('../models/settings');
 const SaleItem = require('../models/salesItems');
-
+const { getInventoryStockStatus } = require('../utils/stockStatus');
 
 const getStartOfDay = (date = new Date()) => {
   const start = new Date(date);
@@ -70,16 +71,15 @@ exports.getDashboardSummary = async (req, res) => {
       }
     ]);
 
-    // compute inventory-based stats (match Inventory page logic)
-    const inventories = await Inventory.find().populate('product', 'name sku reorderLevel');
+    const settings = await Settings.findOne();
+    const lowStockThreshold = Number(settings?.lowStockThreshold ?? 5) || 5;
+
+    const inventories = await Inventory.find().populate('product', 'name sku reorderLevel lowStockThreshold');
     const stats = {
-      available: inventories.filter(item => item.status === 'Available').length,
-      lowStock: inventories.filter(item => {
-        if (!item.product) return false;
-        if (item.quantity === 0) return false;
-        return item.quantity <= (item.product.reorderLevel ?? 10);
-      }).length,
-      expired: inventories.filter(item => item.status === 'Expired').length,
+      available: inventories.filter(item => getInventoryStockStatus(item, new Date(), lowStockThreshold) === 'In Stock').length,
+      lowStock: inventories.filter(item => getInventoryStockStatus(item, new Date(), lowStockThreshold) === 'Low Stock').length,
+      outOfStock: inventories.filter(item => getInventoryStockStatus(item, new Date(), lowStockThreshold) === 'Out of Stock').length,
+      expired: inventories.filter(item => getInventoryStockStatus(item, new Date(), lowStockThreshold) === 'Expired').length,
       damaged: inventories.filter(item => item.status === 'Damaged').length,
     };
 
@@ -146,9 +146,14 @@ exports.getRecentPurchases = async (req, res) => {
 };
 exports.getDashboardAlerts = async (req, res) => {
   try {
-    const inventories = await Inventory.find().populate('product', 'name sku reorderLevel');
+    const settings = await Settings.findOne();
+    const lowStockThreshold = Number(settings?.lowStockThreshold ?? 5) || 5;
+
+    const inventories = await Inventory.find().populate('product', 'name sku reorderLevel lowStockThreshold');
 
     const alertMap = new Map();
+
+    const priorityMap = { Expired: 0, 'Out of Stock': 1, 'Low Stock': 2, 'In Stock': 3, Damaged: 4, Reserved: 5 };
 
     inventories.forEach((item) => {
       const product = item.product;
@@ -160,29 +165,27 @@ exports.getDashboardAlerts = async (req, res) => {
         name: product.name,
         sku: product.sku,
         reorderLevel: product.reorderLevel ?? 10,
+        lowStockThreshold: product.lowStockThreshold ?? lowStockThreshold,
         stockQuantity: 0,
         expiredQuantity: 0,
         lowStockQuantity: 0,
-        outOfStockQuantity: 0
+        outOfStockQuantity: 0,
+        status: 'In Stock'
       };
 
-      // Match Inventory page logic exactly:
-      // - out of stock when quantity is 0
-      // - low stock when quantity > 0 and <= reorderLevel
-      // - expired when status is 'Expired'
-      if (item.quantity === 0) {
+      const status = getInventoryStockStatus(item, new Date(), lowStockThreshold);
+      entry.stockQuantity += item.quantity || 0;
+
+      if (status === 'Expired') {
+        entry.expiredQuantity += item.quantity || 0;
+      } else if (status === 'Out of Stock') {
         entry.outOfStockQuantity += 1;
-      } else if (item.quantity <= (product.reorderLevel ?? 10)) {
+      } else if (status === 'Low Stock') {
         entry.lowStockQuantity += 1;
       }
 
-      if (item.status === 'Expired') {
-        entry.expiredQuantity += item.quantity || 0;
-      }
-
-      // use available stock quantity for display (same idea as inventory module's stock level)
-      if (item.status === 'Available') {
-        entry.stockQuantity += item.quantity || 0;
+      if (!entry.status || priorityMap[status] < priorityMap[entry.status]) {
+        entry.status = status;
       }
 
       alertMap.set(id, entry);
@@ -190,9 +193,9 @@ exports.getDashboardAlerts = async (req, res) => {
 
     const allProducts = Array.from(alertMap.values());
 
-    const outOfStockProducts = allProducts.filter((product) => product.outOfStockQuantity > 0 || product.stockQuantity === 0);
-    const lowStockProducts = allProducts.filter((product) => product.lowStockQuantity > 0 || (product.stockQuantity > 0 && product.stockQuantity <= (product.reorderLevel ?? 10)));
-    const expiredProducts = allProducts.filter((product) => product.expiredQuantity > 0);
+    const outOfStockProducts = allProducts.filter((product) => product.status === 'Out of Stock');
+    const lowStockProducts = allProducts.filter((product) => product.status === 'Low Stock');
+    const expiredProducts = allProducts.filter((product) => product.status === 'Expired');
 
     const combinedMap = new Map();
     [...lowStockProducts, ...outOfStockProducts, ...expiredProducts].forEach((prod) => {

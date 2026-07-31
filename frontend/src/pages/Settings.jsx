@@ -109,6 +109,7 @@ export default function Settings() {
         const nextTheme = res.settings.theme || formData.theme;
         setFormData((prev) => ({ ...prev, ...res.settings, theme: nextTheme }));
         applyTheme(nextTheme);
+        window.dispatchEvent(new Event('settings:updated'));
       }
     } catch (err) {
       setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to update settings.' });

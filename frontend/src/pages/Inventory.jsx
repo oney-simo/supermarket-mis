@@ -4,6 +4,8 @@ import LoadingSpinner from "../components/common/LoadingSpinner";
 import "../styles/inventory.css";
 
 import InventoryForm from "../components/inventory/InventoryForm";
+import { getSettings } from "../api/settingsApi";
+import { getInventoryStockStatus } from "../utils/stockStatus";
 
 function Inventory() {
   const [inventory, setInventory] = useState([]);
@@ -12,6 +14,7 @@ function Inventory() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [editingItem, setEditingItem] = useState(null);
+  const [lowStockThreshold, setLowStockThreshold] = useState(5);
 
 
   // edit handleEdit function to set the item to be edited and show the form
@@ -20,25 +23,16 @@ function Inventory() {
     setShowForm(true); // Reuse your form or open the modal/form view
   };
 
-  // Defined first so it can be safely used by stats and filters
   const getStockAlert = (item) => {
-    if (!item.product) return "";
-
-    if (item.quantity === 0) {
-      return "Out of Stock";
-    }
-
-    if (item.quantity <= item.product.reorderLevel) {
-      return "Low Stock";
-    }
-
-    return "Normal";
+    if (!item.product) return "In Stock";
+    return getInventoryStockStatus(item, new Date(), lowStockThreshold);
   };
 
   const stats = {
-    available: inventory.filter(item => item.status === "Available").length,
+    available: inventory.filter(item => getStockAlert(item) === "In Stock").length,
     lowStock: inventory.filter(item => getStockAlert(item) === "Low Stock").length,
-    expired: inventory.filter(item => item.status === "Expired").length,
+    outOfStock: inventory.filter(item => getStockAlert(item) === "Out of Stock").length,
+    expired: inventory.filter(item => getStockAlert(item) === "Expired").length,
     damaged: inventory.filter(item => item.status === "Damaged").length,
   };
 
@@ -51,18 +45,20 @@ function Inventory() {
       sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.batchNumber?.toLowerCase().includes(searchTerm.toLowerCase());
       
-    // Handle statusFilter matching either direct status or stock alert type
-    const matchesStatus = 
-      statusFilter === "All" || 
-      item.status === statusFilter || 
-      (statusFilter === "Low Stock" && getStockAlert(item) === "Low Stock");
+    const normalizedStatusFilter = statusFilter === "Available" || statusFilter === "In Stock" ? "In Stock" : statusFilter;
+
+    const matchesStatus =
+      normalizedStatusFilter === "All" ||
+      getStockAlert(item) === normalizedStatusFilter ||
+      item.status === normalizedStatusFilter;
 
     return matchesSearch && matchesStatus;
   });
 
-  const handleFormSuccess = () => {
-    setShowForm(false); // Close the form
-    loadInventoryData(); // Call your existing data loading function to refresh the table
+  const handleFormSuccess = async () => {
+    setShowForm(false);
+    await loadInventoryData();
+    window.dispatchEvent(new Event('inventory:updated'));
   };
 
   const loadInventoryData = async () => {
@@ -77,8 +73,43 @@ function Inventory() {
     }
   };
 
+  const loadSettings = async () => {
+    try {
+      const settings = await getSettings();
+      if (settings?.lowStockThreshold !== undefined) {
+        setLowStockThreshold(Number(settings.lowStockThreshold) || 5);
+      }
+    } catch (error) {
+      console.error('Settings error:', error);
+    }
+  };
+
   useEffect(() => {
     loadInventoryData();
+    loadSettings();
+
+    const handleSettingsUpdated = () => {
+      loadSettings();
+      loadInventoryData();
+    };
+
+    const handleInventoryUpdated = () => {
+      loadInventoryData();
+    };
+
+    const handleSalesUpdated = () => {
+      loadInventoryData();
+    };
+
+    window.addEventListener('settings:updated', handleSettingsUpdated);
+    window.addEventListener('inventory:updated', handleInventoryUpdated);
+    window.addEventListener('sales:updated', handleSalesUpdated);
+
+    return () => {
+      window.removeEventListener('settings:updated', handleSettingsUpdated);
+      window.removeEventListener('inventory:updated', handleInventoryUpdated);
+      window.removeEventListener('sales:updated', handleSalesUpdated);
+    };
   }, []);
 
   if (loading) {
@@ -99,14 +130,19 @@ function Inventory() {
 
       {/* Summary Stat Cards */}
       <div className="inventory-stats">
-        <div className="inventory-stat-card" onClick={() => setStatusFilter("Available") }>
-          <div className="inventory-stat-card__label">Available</div>
+        <div className="inventory-stat-card" onClick={() => setStatusFilter("In Stock") }>
+          <div className="inventory-stat-card__label">In Stock</div>
           <div className="inventory-stat-card__value">{stats.available}</div>
         </div>
 
         <div className="inventory-stat-card" onClick={() => setStatusFilter("Low Stock") }>
           <div className="inventory-stat-card__label">Low Stock</div>
           <div className="inventory-stat-card__value">{stats.lowStock}</div>
+        </div>
+
+        <div className="inventory-stat-card" onClick={() => setStatusFilter("Out of Stock") }>
+          <div className="inventory-stat-card__label">Out of Stock</div>
+          <div className="inventory-stat-card__value">{stats.outOfStock}</div>
         </div>
 
         <div className="inventory-stat-card" onClick={() => setStatusFilter("Expired") }>
@@ -148,8 +184,9 @@ function Inventory() {
           className="inventory-status-select"
         >
           <option value="All">All Statuses ▼</option>
-          <option value="Available">Available</option>
+          <option value="In Stock">In Stock</option>
           <option value="Low Stock">Low Stock</option>
+          <option value="Out of Stock">Out of Stock</option>
           <option value="Expired">Expired</option>
           <option value="Damaged">Damaged</option>
           <option value="Reserved">Reserved</option>
@@ -186,7 +223,19 @@ function Inventory() {
                   ? new Date(item.expiryDate).toLocaleDateString()
                   : "No expiry"}
               </td>
-              <td>{item.status}</td>
+              <td>
+                <span style={{
+                  display: 'inline-block',
+                  padding: '4px 8px',
+                  borderRadius: '999px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: '#fff',
+                  backgroundColor: getStockAlert(item) === 'Out of Stock' ? '#dc2626' : getStockAlert(item) === 'Low Stock' ? '#f59e0b' : getStockAlert(item) === 'Expired' ? '#b91c1c' : '#16a34a'
+                }}>
+                  {getStockAlert(item)}
+                </span>
+              </td>
               <td>{getStockAlert(item)}</td>
               <td>
                 <button 

@@ -7,16 +7,19 @@ import {
   Truck, 
   Users, 
   ShoppingCart, 
-  Banknote 
+  Banknote,
+  AlertTriangle
 } from "lucide-react";
 
 import StatCard from "../components/dashboard/StatCard";
 import StockAlert from "../components/dashboard/StockAlert";
+import { getSettings } from "../api/settingsApi";
 import "../styles/dashboard.css";
 
 function Dashboard() {
   const [dashboardData, setDashboardData] = useState(null);
   const [dashboardAlerts, setDashboardAlerts] = useState(null);
+  const [lowStockThreshold, setLowStockThreshold] = useState(5);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -39,16 +42,38 @@ function Dashboard() {
       }
     };
 
-    fetchDashboard();
-    fetchDashboardAlerts();
+    const fetchSettings = async () => {
+      try {
+        const settings = await getSettings();
+        if (settings?.lowStockThreshold !== undefined) {
+          setLowStockThreshold(Number(settings.lowStockThreshold) || 5);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-    const handleSalesUpdated = () => {
+    const refreshDashboard = () => {
       fetchDashboard();
       fetchDashboardAlerts();
+      fetchSettings();
+    };
+
+    refreshDashboard();
+
+    const handleSalesUpdated = () => {
+      refreshDashboard();
     };
 
     window.addEventListener('sales:updated', handleSalesUpdated);
-    return () => window.removeEventListener('sales:updated', handleSalesUpdated);
+    window.addEventListener('inventory:updated', handleSalesUpdated);
+    window.addEventListener('settings:updated', handleSalesUpdated);
+
+    return () => {
+      window.removeEventListener('sales:updated', handleSalesUpdated);
+      window.removeEventListener('inventory:updated', handleSalesUpdated);
+      window.removeEventListener('settings:updated', handleSalesUpdated);
+    };
   }, []);
 
   if (error) {
@@ -69,6 +94,18 @@ function Dashboard() {
           title="Products"
           value={dashboardData.totalProducts}
           icon={<Package size={24} className="stat-icon" />}
+        />
+
+        <StatCard
+          title="Low Stock"
+          value={dashboardData.inventoryStats?.lowStock ?? 0}
+          icon={<AlertTriangle size={24} className="stat-icon" />}
+        />
+
+        <StatCard
+          title="Out of Stock"
+          value={dashboardData.inventoryStats?.outOfStock ?? 0}
+          icon={<AlertTriangle size={24} className="stat-icon" />}
         />
 
         <StatCard
@@ -96,7 +133,10 @@ function Dashboard() {
         />
       </div>
 
-      <StockAlert products={Array.isArray(dashboardAlerts?.lowStockProducts) ? dashboardAlerts.lowStockProducts : (Array.isArray(dashboardData?.lowStockProducts) ? dashboardData.lowStockProducts : [])} />
+      <StockAlert
+        products={Array.isArray(dashboardAlerts?.lowStockProducts) ? dashboardAlerts.lowStockProducts : (Array.isArray(dashboardData?.lowStockProducts) ? dashboardData.lowStockProducts : [])}
+        lowStockThreshold={lowStockThreshold}
+      />
     </div>
   );
 }

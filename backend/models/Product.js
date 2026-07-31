@@ -86,6 +86,11 @@ supplier: {
       default: 10,
       min: [0, 'Reorder level cannot be negative']
     },
+    lowStockThreshold: {
+      type: Number,
+      default: 5,
+      min: [0, 'Low stock threshold cannot be negative']
+    },
    
     status: {
       type: String,
