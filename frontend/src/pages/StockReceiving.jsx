@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { getStockReceivings, receiveStock } from '../api/stockReceivingAPI';
-import { getProducts } from '../api/productApi';
+import { getProducts } from '../api/productService';
 import api from '../api/axios';
 import Modal from '../components/common/Modal';
 import '../styles/stockReceiving.css';
