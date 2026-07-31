@@ -8,7 +8,7 @@ import Modal from "../components/common/Modal";
 
 import "../styles/products.css";
 import LoadingSpinner from "../components/common/LoadingSpinner";
-import { getProducts } from "../api/productApi";
+import { getProducts } from "../api/productService";
 
 function Products() {
   const [products, setProducts] = useState([]);
