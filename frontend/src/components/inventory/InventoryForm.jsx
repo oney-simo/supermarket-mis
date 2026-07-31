@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getProducts } from "../../api/productApi";
+import { getProducts } from "../../api/productService";
 import api from "../../api/axios";
 import LoadingSpinner from "../common/LoadingSpinner";
 
