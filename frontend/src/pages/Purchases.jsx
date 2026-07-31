@@ -332,7 +332,7 @@ function Purchases() {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '24px' }}>
-              <strong>Total Amount: {'$' + computeTotal().toFixed(2)}</strong>
+              <strong>Total Amount: {'TZS ' + computeTotal().toFixed(2)}</strong>
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button
                   type="button"
@@ -384,7 +384,7 @@ function Purchases() {
                     const supplierLabel = purchase.supplier && (purchase.supplier.name || purchase.supplier.companyName)
                       ? (purchase.supplier.name || purchase.supplier.companyName)
                       : 'Unknown';
-                    const totalLabel = purchase.totalAmount ? '$' + purchase.totalAmount.toFixed(2) : '$0.00';
+                    const totalLabel = purchase.totalAmount ? 'TZS ' + purchase.totalAmount.toFixed(2) : 'TZS 0.00';
 
                     return (
                       <tr key={purchase._id} style={{ borderBottom: '1px solid #e2e8f0' }}>

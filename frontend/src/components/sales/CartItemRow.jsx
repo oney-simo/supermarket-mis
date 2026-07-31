@@ -12,7 +12,7 @@ export default function CartItemRow({ item, index, products, onChange, onRemove,
         <option value="">-- Choose Product --</option>
         {products.map((prod) => (
           <option key={prod._id} value={prod._id}>
-            {prod.name} (${prod.sellingPrice || prod.price || 0})
+            {prod.name} (TZS {prod.sellingPrice || prod.price || 0})
           </option>
         ))}
       </select>

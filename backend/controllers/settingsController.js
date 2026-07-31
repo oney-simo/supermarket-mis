@@ -8,7 +8,7 @@ const buildSettingsPayload = (payload = {}) => ({
   logo: '',
   receiptHeader: '',
   receiptFooter: '',
-  currencySymbol: '$',
+  currencySymbol: 'TZS',
   taxRate: 0,
   lowStockThreshold: 5,
   allowNegativeStock: false,

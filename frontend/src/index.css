@@ -81,7 +81,7 @@ a {
 }
 
 .material-symbols-outlined {
-  font-family: 'Material Symbols Outlined';
+  font-family: 'Material Symbols Outlined', 'Segoe UI Symbol', 'Noto Color Emoji', Arial, sans-serif;
   font-weight: 400;
   font-style: normal;
   font-size: 1.1rem;

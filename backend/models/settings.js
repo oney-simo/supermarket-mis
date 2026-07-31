@@ -48,7 +48,7 @@ const settingsSchema = new mongoose.Schema(
     currencySymbol: {
       type: String,
       trim: true,
-      default: '$'
+      default: 'TZS'
     },
     taxRate: {
       type: Number,

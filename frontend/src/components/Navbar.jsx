@@ -1,4 +1,10 @@
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
+
 function Navbar({ setSidebarOpen, sidebarOpen }) {
+  const { role } = useContext(AuthContext);
+  const displayRole = role ? role.charAt(0).toUpperCase() + role.slice(1) : 'Guest';
+
   return (
     <header className="navbar">
       <div className="navbar__left">
@@ -17,7 +23,7 @@ function Navbar({ setSidebarOpen, sidebarOpen }) {
 
       <div className="navbar__right">
         <span className="status-pill">
-          <span className="material-symbols-outlined">notifications_active</span> Admin
+          <span className="material-symbols-outlined">notifications_active</span> {displayRole}
         </span>
       </div>
     </header>

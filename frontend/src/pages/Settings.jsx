@@ -249,7 +249,7 @@ export default function Settings() {
                     name="currencySymbol"
                     value={formData.currencySymbol}
                     onChange={handleChange}
-                    placeholder="e.g. $, TSh, €"
+                    placeholder="e.g. TZS, TSh, €"
                     style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
                   />
                 </div>

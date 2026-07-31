@@ -196,7 +196,7 @@ function Categories() {
               <ul style={{ paddingLeft: "20px", marginBottom: "20px" }}>
   {categoryProducts.map((prod) => (
     <li key={prod._id} style={{ marginBottom: "8px" }}>
-      <strong>{prod.name}</strong> - Stock: {prod.stockQuantity ?? prod.stock ?? prod.quantity ?? prod.stockLevel ?? 0} | Price: ${prod.price ?? prod.retailPrice ?? prod.sellingPrice ?? 0}
+      <strong>{prod.name}</strong> - Stock: {prod.stockQuantity ?? prod.stock ?? prod.quantity ?? prod.stockLevel ?? 0} | Price: TZS {prod.price ?? prod.retailPrice ?? prod.sellingPrice ?? 0}
     </li>
   ))}
 </ul>

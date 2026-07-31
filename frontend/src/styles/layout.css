@@ -79,7 +79,7 @@ body {
   top: 0;
   height: calc(100vh - 68px);
   align-self: flex-start;
-  transition: width 240ms ease, min-width 240ms ease, padding 240ms ease, transform 240ms ease;
+  transition: width 240ms ease, min-width 240ms ease, padding 240ms ease, transform 240ms ease, background-color 240ms ease;
 }
 
 .sidebar__brand {
@@ -151,15 +151,44 @@ body {
   padding: 20px 10px;
 }
 
+.sidebar__brand-title,
+.sidebar h4,
+.sidebar__nav-label,
+.sidebar__logout-label {
+  transition: opacity 220ms ease, max-width 220ms ease, max-height 220ms ease, margin 220ms ease, padding 220ms ease;
+}
+
+.sidebar.collapsed {
+  width: 80px;
+  min-width: 80px;
+  padding: 20px 10px;
+}
+
+.sidebar.collapsed .sidebar__brand {
+  justify-content: center;
+}
+
 .sidebar.collapsed .sidebar__brand-title,
 .sidebar.collapsed h4,
-.sidebar.collapsed .sidebar__nav-label {
-  display: none;
+.sidebar.collapsed .sidebar__nav-label,
+.sidebar.collapsed .sidebar__logout-label {
+  opacity: 0;
+  visibility: hidden;
+  max-width: 0;
+  max-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 .sidebar.collapsed a {
   justify-content: center;
   padding: 10px;
+  gap: 0;
+}
+
+.sidebar.collapsed .sidebar__logout {
+  justify-content: center;
 }
 
 .content {

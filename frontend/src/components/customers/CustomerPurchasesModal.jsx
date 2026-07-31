@@ -39,7 +39,7 @@ export default function CustomerPurchasesModal({ isOpen, onClose, customer }) {
                 <strong>Total Orders:</strong> {history?.totalOrders || 0}
               </div>
               <div>
-                <strong>Total Spent:</strong> ${history?.totalSpent?.toFixed(2) || '0.00'}
+                <strong>Total Spent:</strong> TZS {history?.totalSpent?.toFixed(2) || '0.00'}
               </div>
             </div>
 
@@ -64,7 +64,7 @@ export default function CustomerPurchasesModal({ isOpen, onClose, customer }) {
                   history.purchases.map((sale) => (
                     <tr key={sale._id} style={{ borderBottom: '1px solid #dee2e6' }}>
                       <td style={{ padding: '8px', fontWeight: 'bold' }}>{sale.receiptNumber}</td>
-                      <td style={{ padding: '8px', color: '#28a745', fontWeight: 'bold' }}>${sale.grandTotal?.toFixed(2)}</td>
+                      <td style={{ padding: '8px', color: '#28a745', fontWeight: 'bold' }}>TZS {sale.grandTotal?.toFixed(2)}</td>
                       <td style={{ padding: '8px' }}>{sale.paymentMethod}</td>
                       <td style={{ padding: '8px' }}>{sale.paymentStatus}</td>
                       <td style={{ padding: '8px' }}>{new Date(sale.createdAt).toLocaleDateString()}</td>
