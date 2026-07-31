@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getPurchases, createPurchase } from '../api/purchaseApi';
-import { getProducts } from '../api/productApi';
+import { getProducts } from '../api/productService';
 import { getSuppliers } from '../api/supplierAPI';
 
 function Purchases() {
